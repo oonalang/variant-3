@@ -198,6 +198,9 @@ namespace imguimenu
     {
         const ImVec2 size(880.f, 560.f);
         ImGuiIO& io = ImGui::GetIO();
+        if (io.Fonts == nullptr || io.Fonts->Fonts.empty() || io.DisplaySize.x <= 0.f || io.DisplaySize.y <= 0.f) {
+            return;
+        }
         ImGui::SetNextWindowSize(size, ImGuiCond_Always);
         ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f),
                                 ImGuiCond_FirstUseEver, ImVec2(0.5f, 0.5f));

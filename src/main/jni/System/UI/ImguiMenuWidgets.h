@@ -116,8 +116,10 @@ namespace imguimenu
     }
     inline bool Segmented(RowCtx& c, const char* const* items, int n, int* sel) {
         const float H = 30.f, PX = 12.f;
+        if (items == nullptr || n <= 0 || n > 8) return false;
         float w[8], total = 0.f;
-        for (int i = 0; i < n; i++) { w[i] = ImGui::CalcTextSize(items[i]).x + PX * 2.f; total += w[i]; }
+        for (int i = 0; i < n; i++) w[i] = (items[i] ? ImGui::CalcTextSize(items[i]).x : 0.f) + PX * 2.f;
+        for (int i = 0; i < n; i++) total += w[i];
         ImVec2 p0(c.x - total - 4.f, c.cy - H * 0.5f), save = ImGui::GetCursorScreenPos();
         c.dl->AddRectFilled(p0, ImVec2(p0.x + total + 4.f, p0.y + H), IM_COL32(0, 0, 0, 70), 8.f);
         bool changed = false;

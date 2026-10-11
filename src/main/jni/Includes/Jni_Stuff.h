@@ -158,6 +158,7 @@ int ShowSoftKeyboardInput() {
     jclass looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
+    if (env->ExceptionCheck()) env->ExceptionClear();
 
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
@@ -223,13 +224,14 @@ int PollUnicodeChars() {
 
 std::string getClipboard() {
     std::string result;
-    JNIEnv *env;
+    JNIEnv *env = nullptr;
 
     jvm->AttachCurrentThread(&env, NULL);
 
     auto looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
+    if (env->ExceptionCheck()) env->ExceptionClear();
 
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
@@ -243,6 +245,7 @@ std::string getClipboard() {
 
     auto str = env->NewStringUTF("clipboard");
     auto clipboardManager = env->CallObjectMethod(mInitialApplication, getSystemServiceMethod, str);
+    if (env->ExceptionCheck()) env->ExceptionClear();
     env->DeleteLocalRef(str);
 
     jclass ClipboardManagerClass = env->FindClass("android/content/ClipboardManager");
@@ -265,12 +268,16 @@ std::string getClipboard() {
     env->DeleteLocalRef(mInitialApplication);
     env->DeleteLocalRef(activityThreadClass);
     jvm->DetachCurrentThread();
-    return result.c_str();
+    return result;
 }
 
 std::string Login(const char *user_key) {
-    JNIEnv *env;
-    jvm->AttachCurrentThread(&env, 0);
+    JNIEnv *env = nullptr;
+    bool attached = false;
+    if (jvm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+        jvm->AttachCurrentThread(&env, 0);
+        attached = true;
+    }
 
     auto looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
@@ -288,7 +295,7 @@ std::string Login(const char *user_key) {
     hwid += GetDeviceModel(env);
     hwid += GetDeviceBrand(env);
     std::string UUID = GetDeviceUniqueIdentifier(env, hwid.c_str());
-    jvm->DetachCurrentThread();
+    if (attached) { jvm->DetachCurrentThread(); attached = false; }
     std::string errMsg;
 	usedKey = user_key;
 
@@ -354,17 +361,21 @@ std::string Login(const char *user_key) {
                     errMsg = result["reason"].get<std::string>();
                 }
             } catch (json::exception &e) {
-                errMsg = "{";
-                errMsg += e.what();
-                errMsg += "}\n{";
-                errMsg += chunk.memory;
-                errMsg += "}";
+                errMsg = e.what();
+                size_t cut = 200;
+                errMsg += " | body: ";
+                if (chunk.memory) {
+                    std::string body(chunk.memory);
+                    if (body.size() > cut) body = body.substr(0, cut) + "...";
+                    errMsg += body;
+                }
             }
         } else {
             errMsg = curl_easy_strerror(res);
         }
     }
     curl_easy_cleanup(curl);
-    jvm->DetachCurrentThread();
+    free(chunk.memory);
+    if (attached) jvm->DetachCurrentThread();
     return bValid ? "OK" : errMsg;
 }
