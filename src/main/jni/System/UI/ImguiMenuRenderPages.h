@@ -5,7 +5,7 @@
 #pragma once
 #include "ImguiMenuTheme.h"
 #include "ImguiMenuWidgets.h"
-#include "imgui_internal.h"
+#include "../../ImGui/imgui_internal.h"
 
 extern bool HIDEESP;
 extern float SnowBsize;

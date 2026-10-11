@@ -19,7 +19,7 @@
 #include "ImguiMenuWidgets.h"
 #include "ImguiMenuTheme.h"
 #include "ImguiMenuRenderPages.h"
-#include "runtime_preview_menu.h"
+#include "../../ImGui/runtime_preview_menu.h"
 
 extern bool HIDEESP;
 extern float SnowBsize;
@@ -33,6 +33,7 @@ extern float tabAlpha;
 extern int page;
 extern int activeTab;
 extern bool g_LogoPreviewMode;
+extern int skinSubTab;
 
 namespace imguimenu
 {
@@ -110,8 +111,20 @@ namespace imguimenu
         }
         ImGui::EndChild();
     }
-    // pages helpers come after; defined below inside this namespace
-    #include "ImguiMenuRenderPages.h"
+    inline void DataSkinsPage(float contentW, float childH)
+    {
+        ImGui::SetCursorPos(ImVec2(25.f, 87.f));
+        const runtime_preview_menu::ChildFrame skinChild =
+            runtime_preview_menu::BeginContentChild("SKINS##IMGUIMENU", ImVec2(contentW, childH));
+        {
+            {
+                auto r = Row("Unlock Blueprints", true);
+                Switch(r, &Config.ExtraMenu.Blueprints);
+            }
+            RenderSkinCategoryContent(skinSubTab, true);
+        }
+        runtime_preview_menu::EndContentChild(skinChild);
+    }
 
     inline void DataMiscPage(float contentW, float childH)
     {
@@ -239,10 +252,11 @@ namespace imguimenu
                 { "Aim",     0, IM_COL32(10, 132, 255, 255) },
                 { "Visuals", 1, IM_COL32(50, 173, 230, 255) },
                 { "Players", 2, IM_COL32(191, 90, 242, 255) },
-                { "Misc",    3, IM_COL32(255, 159, 10, 255) },
-                { "Config",  4, IM_COL32(142, 142, 147, 255) },
+                { "Skins",   3, IM_COL32(255, 159, 10, 255) },
+                { "Misc",    4, IM_COL32(255, 159, 10, 255) },
+                { "Config",  5, IM_COL32(142, 142, 147, 255) },
             };
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 6; i++) {
                 ImGui::SetCursorPos(ImVec2(11.f, 61.f + i * 32.f));
                 ImU32 col = (i == 0 && s.tab == 0) ? IM_COL32(255, 255, 255, 40) : tabs[i].c;
                 if (Tab(tabs[i].n, tabs[i].icon, col, s.tab == i, 178.f)) s.tab = i;
@@ -259,12 +273,13 @@ namespace imguimenu
         {
             ImDrawList* cdl = ImGui::GetWindowDrawList();
             ImVec2 cp = ImGui::GetWindowPos();
-            static const char* titles[] = { "Aim", "Visuals", "Players", "Misc", "Config" };
+            static const char* titles[] = { "Aim", "Visuals", "Players", "Skins", "Misc", "Config" };
             static const char* subs[] = {
                 "Target selection and assist behavior", "Overlay and rendering options",
-                "Player list and filters", "Miscellaneous options", "Save and load profiles"
+                "Player list and filters", "Unlock and equip skins",
+                "Miscellaneous options", "Save and load profiles"
             };
-            int pageCursor = ImClamp(s.tab, 0, 4);
+            int pageCursor = ImClamp(s.tab, 0, 5);
             cdl->AddText(ImGui::GetFont(), 30.f, ImVec2(cp.x + 25.f, cp.y + 22.f), COL_TEXT, titles[pageCursor]);
             cdl->AddText(ImGui::GetFont(), 30.f, ImVec2(cp.x + 25.7f, cp.y + 22.f), COL_TEXT, titles[pageCursor]);
             cdl->AddText(ImGui::GetFont(), 16.f, ImVec2(cp.x + 25.f, cp.y + 56.f), DIM, subs[pageCursor]);
@@ -301,8 +316,9 @@ namespace imguimenu
             if (pageCursor == 0) data::VisualsPage(contentW, childH);
             else if (pageCursor == 1) data::PlayersPage(contentW, childH);
             else if (pageCursor == 2) data::AimbotPage(contentW, childH);
-            else if (pageCursor == 3) imguimenu::DataMiscPage(contentW, childH);
-            else if (pageCursor == 4) imguimenu::DataConfigPage(contentW, childH);
+            else if (pageCursor == 3) DataSkinsPage(contentW, childH);
+            else if (pageCursor == 4) DataMiscPage(contentW, childH);
+            else if (pageCursor == 5) DataConfigPage(contentW, childH);
 
             // help button
             ImVec2 hc(cp.x + 25.f + 11.f, cp.y + size.y - 38.f);
