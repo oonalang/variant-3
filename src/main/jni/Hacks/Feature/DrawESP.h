@@ -11,7 +11,6 @@
 #include <array>
 #include <vector>
 
-
 #define RAD2DEG( x )  ( (float)(x) * (float)(180.f / IM_PI) )
 #define DEG2RAD( x ) ( (float)(x) * (float)(IM_PI / 180.f) )
 
@@ -300,10 +299,10 @@ void HandleEnemyInfo(ImDrawList *draw) {
     if (get_LocalPawn != nullptr) {
         pLocalPawn_rootPos = get_LocalPawn->get_LastPawnPos();
     }
-    
+
     int enemyBots = 0;
     int enenyEnemies = 0;
-    
+
     BaseGame *get_MatchGame = GamePlay::get_MatchGame();
     if (get_MatchGame != nullptr) {
         List<Pawn *> *EnemyPawns = get_MatchGame->EnemyPawns();
@@ -314,26 +313,26 @@ void HandleEnemyInfo(ImDrawList *draw) {
                 if (pawn != nullptr) {
                     Vector3 pEnemyPawn_headPos = pawn->get_HeadPosition();
                     Vector3 pEnemyPawn_rootPos = pawn->get_LastPawnPos();
-                    
+
                     bool isBot = *(bool*)((uintptr_t)pawn + api24);
                     if (isBot) {
                         enemyBots++;
                     } else {
                         enenyEnemies++;
                     }
-                    
+
                     bool isAlive = *(bool*)((uintptr_t)pawn + api25);
                     if (isAlive) {
                         enemyBots++;
                     } else {
                         enenyEnemies++;
                     }
-                    
+
                     auto mainCamera = Camera::get_main();
                     if (mainCamera) {
                         Vector3 HeadSc = mainCamera->WorldToScreenPoint(pEnemyPawn_headPos);
                         Vector3 RootSc = mainCamera->WorldToScreenPoint(pEnemyPawn_rootPos);
-                        
+
                         AttackableTargetInfo *m_AttackableInfo = pawn->m_AttackableInfo();
                         if (m_AttackableInfo != nullptr) {
                             bool isBot = false;
@@ -342,17 +341,17 @@ void HandleEnemyInfo(ImDrawList *draw) {
                             } catch (...) {
                                 isBot = true;
                             }
-                            
+
                             bool isAlive = false;
                             try {
                                 isAlive = *(bool*)((uintptr_t)pawn + api25);
                             } catch (...) {
                                 isAlive = true;
                             }
-                            
+
                             if (Tools::IsPtrValid(pawn) && Tools::IsPtrValid(pawn->get_PlayerName())) {
                                 std::string playerName = pawn->get_PlayerName()->CString();
-                                
+
                                 auto textSize = ImGui::CalcTextSize(playerName.c_str(), 0, 18.0f);
                                 float namelength = 14.0f;
                                 if (playerName.length() <= 13) {
@@ -366,10 +365,10 @@ void HandleEnemyInfo(ImDrawList *draw) {
                                 } else {
                                     namelength = 10.f;
                                 }
-                                
+
                                 if (HeadSc.z < 0) continue;
                                 DrawTextWithBorder1(draw, playerName, {HeadSc.x - 43.0f, glHeight - HeadSc.y - 28.0f}, IM_COL32(255, 255, 255, 255), outlinecolor, 18.0f);
-                                
+
                             }
                         }
                     }
@@ -528,47 +527,47 @@ static inline void DrawEspSignal(ImDrawList* draw, Vector3 rootPos, int glHeight
 
 static inline void TeleportToEnemy() {
     if (!Config.TeleportEnemy) return;
-    
+
     BaseGame *get_MatchGame = GamePlay::get_MatchGame();
     if (!Tools::IsPtrValid(get_MatchGame)) return;
-    
+
     Pawn *get_LocalPawn = GamePlay::get_LocalPawn();
     if (!Tools::IsPtrValid(get_LocalPawn)) return;
-    
+
     Vector3 localPos = get_LocalPawn->get_LastPawnPos();
-    
+
     List<Pawn *> *EnemyPawns = get_MatchGame->EnemyPawns();
     if (!Tools::IsPtrValid(EnemyPawns) || !EnemyPawns->getSize()) return;
-    
+
     Pawn *closestEnemy = nullptr;
     float minDistance = 100.0f;
-    
+
     Pawn **pawns = (Pawn **)EnemyPawns->getItems();
     for (int i = 0; i < EnemyPawns->getSize(); i++) {
         Pawn *pawn = pawns[i];
         if (!Tools::IsPtrValid(pawn)) continue;
-        
+
         bool isAlive = *(bool *)((uintptr_t)pawn + Class_Pawn_m_IsAlive);
         if (!isAlive) continue;
-        
+
         Vector3 enemyPos = pawn->get_LastPawnPos();
         float distance = Vector3::Distance(localPos, enemyPos) / 70.0f;
-        
+
         if (distance < minDistance) {
             minDistance = distance;
             closestEnemy = pawn;
         }
     }
-    
+
     if (closestEnemy) {
         Vector3 targetPos = closestEnemy->get_LastPawnPos();
-        
+
         Vector3 direction = localPos - targetPos;
         direction.y = 0;
         direction = direction.Normalize();
-        
+
         Vector3 teleportPos = targetPos + (direction * 1.5f);
-        
+
         Transform *localTransform = get_LocalPawn->get_transform();
         if (Tools::IsPtrValid(localTransform)) {
             auto _Transform_set_position = (void (*)(Transform *, Vector3))(Class_Transform_set_position);
@@ -581,90 +580,90 @@ static inline void TeleportToEnemy() {
 
 static inline void DrawVehicleESP(ImDrawList *draw, int sWidth, int sHeight) {
     if (!Config.ESPMenu.Vehicle) return;
-    
+
     BaseGame *get_MatchGame = GamePlay::get_MatchGame();
     if (!Tools::IsPtrValid(get_MatchGame)) return;
-    
+
     Pawn *get_LocalPawn = GamePlay::get_LocalPawn();
     Vector3 pLocalPawn_rootPos = Vector3::zero();
     if (Tools::IsPtrValid(get_LocalPawn)) {
         pLocalPawn_rootPos = get_LocalPawn->get_LastPawnPos();
     }
-    
+
     List<PhysicsVehicle *> **m_AllVehicles_ptr = reinterpret_cast<List<PhysicsVehicle *> **>((uintptr_t)get_MatchGame + Class_BaseGame__m_AllVehicles);
     if (!Tools::IsPtrValid(m_AllVehicles_ptr)) return;
-    
+
     List<PhysicsVehicle *> *m_AllVehicles = *m_AllVehicles_ptr;
     if (!Tools::IsPtrValid(m_AllVehicles) || !m_AllVehicles->getSize()) return;
-    
+
     PhysicsVehicle **vehicles = (PhysicsVehicle **)m_AllVehicles->getItems();
     if (!Tools::IsPtrValid(vehicles)) return;
-    
+
     for (int i = 0; i < m_AllVehicles->getSize(); i++) {
         PhysicsVehicle *vehicle = vehicles[i];
         if (!Tools::IsPtrValid(vehicle)) continue;
-        
+
         Transform *vehicleTransform = vehicle->get_transform();
         if (!Tools::IsPtrValid(vehicleTransform)) continue;
-        
+
         Vector3 vehiclePos = vehicleTransform->get_position();
-        
+
         auto mainCamera = Camera::get_main();
         if (!mainCamera) continue;
-        
+
         Vector3 screenPos = mainCamera->WorldToScreenPoint(vehiclePos);
         if (screenPos.z <= 0) continue;
-        
+
         EVehicleType vType = vehicle->vehicleType();
         std::string vehicleName = EVehicleToString(vType);
-        
+
         if (vehicleName.empty()) continue;
-        
+
         float distance = Vector3::Distance(pLocalPawn_rootPos, vehiclePos);
-        
+
         std::string displayText = vehicleName + " [" + std::to_string((int)distance) + "M]";
-        
+
         ImVec2 textSize = ImGui::CalcTextSize(displayText.c_str());
         float textX = screenPos.x - (textSize.x / 2.0f);
         float textY = sHeight - screenPos.y;
-        
+
         draw->AddText(NULL, 15.0f, ImVec2(textX - 1, textY - 1), IM_COL32(0, 0, 0, 255), displayText.c_str());
         draw->AddText(NULL, 15.0f, ImVec2(textX + 1, textY - 1), IM_COL32(0, 0, 0, 255), displayText.c_str());
         draw->AddText(NULL, 15.0f, ImVec2(textX - 1, textY + 1), IM_COL32(0, 0, 0, 255), displayText.c_str());
         draw->AddText(NULL, 15.0f, ImVec2(textX + 1, textY + 1), IM_COL32(0, 0, 0, 255), displayText.c_str());
         draw->AddText(NULL, 15.0f, ImVec2(textX, textY), IM_COL32(255, 255, 255, 255), displayText.c_str());
-        
+
         if (Config.ESPMenu.VehicleHealth) {
             float curHP = vehicle->get_Health();
-            
+
             if (curHP > 0) {
                 float maxHP = 100.0f;
                 float healthPercent = std::min((curHP / maxHP) * 100.0f, 100.0f);
-                
+
                 long healthColor = IM_COL32(
                     std::min(510 * (100 - healthPercent) / 100, 255.0f),
                     std::min(510 * healthPercent / 100, 255.0f),
                     0,
                     255
                 );
-                
+
                 float barWidth = 60.0f;
                 float barHeight = 6.0f;
                 float barX = screenPos.x - (barWidth / 2.0f);
                 float barY = textY + 18.0f;
-                
+
                 draw->AddRectFilled(
                     ImVec2(barX, barY),
                     ImVec2(barX + barWidth, barY + barHeight),
                     IM_COL32(30, 30, 30, 200)
                 );
-                
+
                 draw->AddRectFilled(
                     ImVec2(barX, barY),
                     ImVec2(barX + (barWidth * healthPercent / 100.0f), barY + barHeight),
                     healthColor
                 );
-                
+
                 draw->AddRect(
                     ImVec2(barX, barY),
                     ImVec2(barX + barWidth, barY + barHeight),
@@ -673,12 +672,12 @@ static inline void DrawVehicleESP(ImDrawList *draw, int sWidth, int sHeight) {
                     0,
                     1.0f
                 );
-                
+
                 std::string healthText = std::to_string((int)curHP) + "%";
                 ImVec2 hpTextSize = ImGui::CalcTextSize(healthText.c_str());
                 float hpTextX = screenPos.x - (hpTextSize.x / 2.0f);
                 float hpTextY = barY + 8.0f;
-                
+
                 draw->AddText(NULL, 12.0f, ImVec2(hpTextX - 1, hpTextY - 1), IM_COL32(0, 0, 0, 255), healthText.c_str());
                 draw->AddText(NULL, 12.0f, ImVec2(hpTextX + 1, hpTextY - 1), IM_COL32(0, 0, 0, 255), healthText.c_str());
                 draw->AddText(NULL, 12.0f, ImVec2(hpTextX - 1, hpTextY + 1), IM_COL32(0, 0, 0, 255), healthText.c_str());
@@ -696,7 +695,6 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
     BaseGame *get_MatchGame = GamePlay::get_MatchGame();
     if (!Tools::IsPtrValid(get_MatchGame)) return;
 
-	
     bool MatchGame = Tools::IsPtrValid((void *)get_MatchGame);
     if (!MatchGame) return;
 
@@ -705,7 +703,7 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
     if (Tools::IsPtrValid(get_LocalPawn)) {
         pLocalPawn_rootPos = get_LocalPawn->get_LastPawnPos();
     }
-    
+
     DrawThrowableAlert(draw, sWidth, sHeight, pLocalPawn_rootPos);
 
     totalBots = 0, totalEnemies = 0;
@@ -730,7 +728,7 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
 
         bool isBot = *(bool *)((uintptr_t)pawn + Class_Pawn_m_IsBot);
         bool isAlive = *(bool *)((uintptr_t)pawn + Class_Pawn_m_IsAlive);
-        
+
         if (isBot) totalBots++; else totalEnemies++;
 
         ImU32 lineColor, boxColor, nameColor, distanceColor, healthColor, skeletonColor;
@@ -762,9 +760,9 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
 
         float distanceToMe = Vector3::Distance(pLocalPawn_rootPos, pEnemyPawn_rootPos);
         float actualHeight = Vector3::Distance(pEnemyPawn_headPos, pEnemyPawn_rootPos);
-        
+
         if (HeadSc.z > 0 && pawn->m_IsAlive()) {
-            
+
             AttackableTargetInfo *m_AttackableInfoPtr = pawn->m_AttackableInfo();
             if (m_AttackableInfoPtr != nullptr && isAlive) {
                 if (Tools::IsPtrValid(pawn) && Tools::IsPtrValid(pawn->get_PlayerName())) {
@@ -813,7 +811,7 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                         draw->AddTriangleFilled(ImVec2(points.at(0).x, points.at(0).y), ImVec2(points.at(1).x, points.at(1).y), ImVec2(points.at(2).x, points.at(2).y), IM_COL32(255, 0, 0, 255));
                     }
                 }
-        
+
                 if (Config.ESPMenu.isPlayerLine && Config.ESPMenu.Target == LineTarget::Top) {
                     draw->AddLine(ImVec2(sWidth / 2, 80), ImVec2(HeadSc.x, sHeight - HeadSc.y), lineColor, lineThickness);
                 }
@@ -864,15 +862,15 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                         draw->AddLine(p1, p2, IM_COL32(r2, g2, b2, 255), lineThickness);
                     }
                 }
-                
+
                 if (Config.ESPMenu.Aimline) {
                     DrawAimLine(draw, sWidth, sHeight);
                 }
-                
+
                 if (Config.ESPMenu.Skeleton) {
                     AddSkeletonToDrawESP(draw, pawn, isBot, sHeight);
                 }
-                
+
                 if (Config.ESPMenu.Vehicle) {
                     DrawVehicleESP(draw, sWidth, sHeight);
                 }
@@ -885,20 +883,20 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                         scaleFactor = 1.2f;
                     } else if (distanceToMe >= 15.0f) {
                         scaleFactor = 1.1f;
-                    }                     
-                    
+                    }
+
                     float infoContainerWidth = boxWidth * 1.6f * scaleFactor;
                     float infoContainerX = HeadSc.x - (infoContainerWidth / 2);
                     float infoCurrentY = sHeight - HeadSc.y - (50.0f * scaleFactor);
                     float centerX = ImGui::GetIO().DisplaySize.x / 2.0f;
-                    float headY = HeadSc.y; 
+                    float headY = HeadSc.y;
                     float fontSize = 18.0f * scaleFactor;
                     float infoTotalHeight = 0.0f;
                     if (Config.ESPMenu.Name) infoTotalHeight += 24.0f * scaleFactor;
                     if (Config.ESPMenu.Health && Config.ESPMenu.HealthPosition == EspHealthPosition::HealthTop) infoTotalHeight += 10.0f * scaleFactor;
 
                     draw->AddRectFilled(ImVec2(infoContainerX, infoCurrentY), ImVec2(infoContainerX + infoContainerWidth, infoCurrentY + infoTotalHeight), IM_COL32(0, 0, 0, 120));
-                    
+
                     if (Config.ESPMenu.Name) {
                         std::string displayText = pawn->m_IsBot() ? "BOT" : pawn->get_PlayerName()->CString();
                         ImVec2 infoTextSize = ImGui::CalcTextSize(displayText.c_str());
@@ -907,7 +905,7 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                         draw->AddText(nullptr, fontSize, ImVec2(infoTextX, infoCurrentY + 3.0f * scaleFactor), IM_COL32(255, 255, 255, 255), displayText.c_str());
                         infoCurrentY += 24.0f * scaleFactor;
                     }
-                    
+
                     if (Config.ESPMenu.Health && Config.ESPMenu.HealthPosition == EspHealthPosition::HealthTop && MaxHP > 0) {
                         float hpRatio = ImClamp((float)CurHP / (float)MaxHP, 0.0f, 1.0f);
                         long curHP_Color = IM_COL32(std::min((int)(510.0f * (1.0f - hpRatio)), 255), std::min((int)(510.0f * hpRatio), 255), 0, 255);
@@ -920,16 +918,16 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                         draw->AddRect(ImVec2(infoHealthBarX, infoCurrentY), ImVec2(infoHealthBarX + infoHealthBarWidth, infoCurrentY + infoHealthBarHeight), IM_COL32(0, 0, 0, 255), 0.0f, 0, 1.0f);
                     }
                 }
-                                                   
+
                 DrawBRClassEsp(draw, pawn, HeadSc.x, sHeight - HeadSc.y, boxWidth, distanceToMe);
-                
+
                 if (Config.ESPMenu.Health && Config.ESPMenu.HealthPosition == EspHealthPosition::HealthSide) {
                     float barX = std::max(PlayerRect.x - 8.0f, 2.0f);
                     DrawEspVerticalHealthBar(draw, barX, PlayerRect.y, PlayerRect.height, CurHP, MaxHP);
                 }
-                
-                DrawArmorEsp(draw, pawn, PlayerRect);                
-                
+
+                DrawArmorEsp(draw, pawn, PlayerRect);
+
                 if (Config.ESPMenu.Distance && distanceToMe <= 60.0f) {
                     float scaleFactor = 1.0f;
                     if (distanceToMe >= 19.0f) {
@@ -939,7 +937,7 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                     } else if (distanceToMe >= 15.0f) {
                         scaleFactor = 1.1f;
                     }
-                    
+
                     std::string s = std::to_string((int)distanceToMe) + "m";
                     float distFontSize = 17.0f * scaleFactor;
                     ImVec2 distTextSize = ImGui::CalcTextSize(s.c_str());
@@ -949,12 +947,12 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
                     float distContainerX = HeadSc.x - (distContainerWidth / 2);
                     float distBoxY = sHeight - RootSc.y + (8.0f * scaleFactor);
                     float distBoxHeight = distTextSize.y + (8.0f * scaleFactor);
-                    
+
                     draw->AddRectFilled(ImVec2(distContainerX, distBoxY), ImVec2(distContainerX + distContainerWidth, distBoxY + distBoxHeight), IM_COL32(0, 0, 0, 120));
                     float distTextX = distContainerX + (distContainerWidth - distTextSize.x) / 2;
                     draw->AddText(nullptr, distFontSize, ImVec2(distTextX, distBoxY + (4.0f * scaleFactor)), IM_COL32(255, 255, 255, 255), s.c_str());
                 }
-              
+
                 if (Config.ESPMenu.Box) {
                     float x = RootSc.x - (boxWidth / 2.0f);
                     float y = sHeight - HeadSc.y;
@@ -980,91 +978,87 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
         }
     }
 
-// ================= BAGONG HUDRON DESIGN (EKSAMININ MULA SA PILL THEME) =================
     if (Config.ESPMenu.Count) {
         int totalEnemyCount = totalBots + totalEnemies;
-        
+
         if (totalEnemyCount > 0) {
-            float windowWidth = 240.0f; 
+            float windowWidth = 240.0f;
             float windowHeight = 85.0f;
-            
+
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, 45.0f), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
             ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
-            
+
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, windowHeight * 0.5f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 8));
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 15.0f);
-            
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.06f, 0.09f, 0.13f, 0.95f)); 
+
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.06f, 0.09f, 0.13f, 0.95f));
             ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.2f, 0.4f, 0.6f, 0.4f));
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-            
-            if (ImGui::Begin("EnemyCounterHUD", nullptr, 
-                            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 
-                            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar | 
-                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoInputs | 
+
+            if (ImGui::Begin("EnemyCounterHUD", nullptr,
+                            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
+                            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar |
+                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoInputs |
                             ImGuiWindowFlags_NoBringToFrontOnFocus)) {
-                
+
                 float colWidth = windowWidth * 0.45f;
-                
-                // --- LEFT: BOTS (Gumagamit ng ICON_FA_ROBOT mula sa Icon.h) ---
+
                 ImGui::BeginGroup();
                 ImGui::SetWindowFontScale(1.2f);
                 float iconBotWidth = ImGui::CalcTextSize(ICON_FA_ROBOT).x;
                 ImGui::SetCursorPosX((colWidth - iconBotWidth) * 0.5f);
                 ImGui::TextColored(ImVec4(0.2f, 0.85f, 0.3f, 1.0f), ICON_FA_ROBOT);
-                
+
                 ImGui::SetWindowFontScale(0.85f);
                 float textBotWidth = ImGui::CalcTextSize("Bots").x;
                 ImGui::SetCursorPosX((colWidth - textBotWidth) * 0.5f);
                 ImGui::TextColored(ImVec4(0.55f, 0.6f, 0.65f, 0.8f), "Bots");
-                
+
                 ImGui::SetWindowFontScale(1.3f);
                 char botStr[16]; sprintf(botStr, "%d", totalBots);
                 float numBotWidth = ImGui::CalcTextSize(botStr).x;
                 ImGui::SetCursorPosX((colWidth - numBotWidth) * 0.5f);
                 ImGui::Text(botStr);
                 ImGui::EndGroup();
-                
-                // --- CENTER DOT ---
+
                 ImGui::SameLine();
                 ImGui::SetCursorPosX(windowWidth * 0.5f - 4.0f);
                 ImGui::SetCursorPosY(windowHeight * 0.5f - 10.0f);
                 ImGui::SetWindowFontScale(1.1f);
                 ImGui::TextColored(ImVec4(0.3f, 0.65f, 1.0f, 1.0f), "•");
-                
-                // --- RIGHT: PLAYERS (Gumagamit ng ICON_FA_USER mula sa Icon.h) ---
+
                 ImGui::SameLine();
                 ImGui::SetCursorPosX(windowWidth * 0.55f);
                 ImGui::SetCursorPosY(8.0f);
-                
+
                 ImGui::BeginGroup();
                 ImGui::SetWindowFontScale(1.2f);
                 float iconPlrWidth = ImGui::CalcTextSize(ICON_FA_USER).x;
                 ImGui::SetCursorPosX(windowWidth * 0.55f + (colWidth - iconPlrWidth) * 0.5f);
                 ImGui::TextColored(ImVec4(1.0f, 0.65f, 0.15f, 1.0f), ICON_FA_USER);
-                
+
                 ImGui::SetWindowFontScale(0.85f);
                 float textPlrWidth = ImGui::CalcTextSize("Players").x;
                 ImGui::SetCursorPosX(windowWidth * 0.55f + (colWidth - textPlrWidth) * 0.5f);
                 ImGui::TextColored(ImVec4(0.55f, 0.6f, 0.65f, 0.8f), "Players");
-                
+
                 ImGui::SetWindowFontScale(1.3f);
                 char plrStr[16]; sprintf(plrStr, "%d", totalEnemies);
                 float numPlrWidth = ImGui::CalcTextSize(plrStr).x;
                 ImGui::SetCursorPosX(windowWidth * 0.55f + (colWidth - numPlrWidth) * 0.5f);
                 ImGui::Text(plrStr);
                 ImGui::EndGroup();
-                
+
                 ImGui::SetWindowFontScale(1.0f);
-                
+
                 ImDrawList* window_draw_list = ImGui::GetWindowDrawList();
                 ImVec2 window_pos = ImGui::GetWindowPos();
                 window_draw_list->AddLine(
                     ImVec2(window_pos.x + 30, window_pos.y + windowHeight - 8),
                     ImVec2(window_pos.x + windowWidth - 30, window_pos.y + windowHeight - 8),
-                    ImGui::GetColorU32(ImVec4(0.2f, 0.4f, 0.6f, 0.3f)), 
+                    ImGui::GetColorU32(ImVec4(0.2f, 0.4f, 0.6f, 0.3f)),
                     1.5f
                 );
             }
@@ -1075,12 +1069,12 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
             auto drawFG = ImGui::GetForegroundDrawList();
             const char* safeText = "[ SAFE ]";
             float fontSize = 25.0f;
-            
+
             ImVec2 textSize = ImGui::CalcTextSize(safeText);
             float currentScreenWidth = ImGui::GetIO().DisplaySize.x;
             float textPosX = (currentScreenWidth - textSize.x) / 2;
             float textPosY = 80.0f - textSize.y - 10.0f;
-            
+
             drawFG->AddText(NULL, fontSize, ImVec2(textPosX - 1, textPosY - 1), IM_COL32(0, 0, 0, 255), safeText);
             drawFG->AddText(NULL, fontSize, ImVec2(textPosX + 1, textPosY - 1), IM_COL32(0, 0, 0, 255), safeText);
             drawFG->AddText(NULL, fontSize, ImVec2(textPosX - 1, textPosY + 1), IM_COL32(0, 0, 0, 255), safeText);
@@ -1089,7 +1083,6 @@ void DrawESP(ImDrawList *draw, int sWidth, int sHeight, float density) {
         }
     }
 }
-
 
 template<typename ThisType, typename... Args>
 void WeaponHandlerByAstral(ThisType thiz, Vector3 startPos, Vector3& dir, Args... args) {

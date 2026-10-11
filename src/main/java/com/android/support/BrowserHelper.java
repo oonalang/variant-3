@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 public class BrowserHelper {
-    
+
     public static boolean isChromeInstalled(Context context) {
         PackageManager pm = context.getPackageManager();
         Intent intent = pm.getLaunchIntentForPackage("com.android.chrome");
@@ -25,5 +25,4 @@ public class BrowserHelper {
         }
     }
 }
-    
 

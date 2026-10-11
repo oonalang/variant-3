@@ -1,7 +1,5 @@
-// ===========================================================================
-// ImguiMenuRenderPages.h - per-page content wiring (widgets -> Config).
-// Depends on: ImguiMenuWidgets.h + SaveConfig.h (Config) + Misc/Settings modules.
-// ===========================================================================
+
+
 #pragma once
 #include "ImguiMenuTheme.h"
 #include "ImguiMenuWidgets.h"
@@ -13,9 +11,6 @@ extern float speedHackMultiplier;
 extern float jumpHeightMultiplier;
 extern float SlideRange;
 
-// Standalone syntax-check support only: in the real build SaveConfig.h ->
-// Init_Hacks.h declares these enums (incl. LineTarget/EAim*), so this block
-// is inert there.
 #if defined(IMGUI_MENU_STANDALONE) && !defined(IMGUI_MENU_STANDALONE_ENUMS)
 #define IMGUI_MENU_STANDALONE_ENUMS
 enum EspBoxType { Fill = 0, Outline = 1, Corner = 2, ThreeD = 3 };
@@ -31,8 +26,7 @@ namespace imguimenu
 {
 namespace data
 {
-        // The reuse map: every activeTab page body from the old render block,
-        // re-rendered through imguimenu widgets with the same pointers/enums.
+
         inline void VisualsPage(float contentW, float childH)
         {
             const float gap = 17.0f;
@@ -153,6 +147,6 @@ namespace data
             }
             ImGui::EndChild();
         }
-    } // namespace data
+    }
 
-} // namespace imguimenu
+}

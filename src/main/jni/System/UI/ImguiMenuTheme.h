@@ -1,11 +1,5 @@
-// ===========================================================================
-// ImguiMenuTheme.h - Theme/values/animation core ported verbatim from
-// https://github.com/eliwoahzja/imguimenu (src/menu.h).
-// Only adapted to the project backend: ImGui feature-check guards (this
-// project ships ImGui 1.71) instead of the DX11 host's assumptions.
-// Fonts stay project-owned (Fonts/*.h): the reference repo's own "asset
-// setup" only declares a 15px UI font and vector icons - both are ported.
-// ===========================================================================
+
+
 #pragma once
 
 #include "../../ImGui/imgui.h"
@@ -13,7 +7,7 @@
 
 namespace imguimenu
 {
-    // ------------------------------------------------------------ constants
+
     static const ImU32 ACCENT   = IM_COL32(10, 132, 255, 255);
     static const ImU32 GREEN    = IM_COL32(48, 209, 88, 255);
     static const ImU32 COL_TEXT = IM_COL32(245, 245, 247, 255);
@@ -23,7 +17,6 @@ namespace imguimenu
     static constexpr float ROW_H = 37.f;
     static constexpr float PAD   = 14.f;
 
-    // ------------------------------------------------------------ helpers
     inline ImU32 LerpCol(ImU32 a, ImU32 b, float t) {
         ImVec4 x = ImGui::ColorConvertU32ToFloat4(a), y = ImGui::ColorConvertU32ToFloat4(b);
         return ImGui::ColorConvertFloat4ToU32(ImVec4(x.x + (y.x - x.x) * t, x.y + (y.y - x.y) * t,
@@ -42,7 +35,6 @@ namespace imguimenu
         dl->AddPolyline(p, 3, col, ImDrawFlags_None, 1.5f);
     }
 
-    // ------------------------------------------------------------ style
     inline void Style() {
         ImGuiStyle& st = ImGui::GetStyle();
         st.PopupRounding = 10.f; st.PopupBorderSize = 1.f;
@@ -58,4 +50,4 @@ namespace imguimenu
         c[ImGuiCol_FrameBgHovered] = ImVec4(1.f, 1.f, 1.f, 0.16f);
         c[ImGuiCol_FrameBgActive]  = ImVec4(1.f, 1.f, 1.f, 0.20f);
     }
-} // namespace imguimenu
+}

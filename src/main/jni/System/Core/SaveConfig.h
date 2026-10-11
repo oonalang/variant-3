@@ -7,7 +7,6 @@
 #include "../foxcheats/include/json.hpp"
 #include "../../Hacks/Feature/Init_Hacks.h"
 
-// Externals defined in Main.cpp
 extern float menu[4];
 extern bool isJumpAdjustmentEnabled;
 extern float jumpHeightMultiplier;
@@ -30,7 +29,7 @@ void SaveConfiguration(const std::string& filename) {
     config["ESPMenu"]["HealthPosition"] = static_cast<int>(Config.ESPMenu.HealthPosition);
     config["ESPMenu"]["CrosshairType"] = static_cast<int>(Config.ESPMenu.CrosshairType);
     config["ESPMenu"]["EspStyle"] = static_cast<int>(Config.ESPMenu.EspStyle);
-    
+
     config["Aim"]["Aimbot360"] = Config.Aim.Aimbot360;
     config["Aim"]["AimSilent"] = Config.Aim.AimSilent;
     config["Aim"]["AimAssistSize"] = Config.Aim.AimAssistSize;

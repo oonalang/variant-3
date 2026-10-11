@@ -1,16 +1,12 @@
-// ===========================================================================
-// ImguiMenuWidgets.h - Custom widgets ported verbatim from
-// https://github.com/eliwoahzja/imguimenu (src/menu.h).
-// RowCtx keeps the original right-to-left layout model so every control
-// behaves pixel-identically to the reference.
-// ===========================================================================
+
+
 #pragma once
 
 #include "ImguiMenuTheme.h"
 
 namespace imguimenu
 {
-    // ------------------------------------------------------------ card + rows
+
     struct Card { ImDrawListSplitter sp; ImVec2 p0; float w; };
     struct RowCtx { ImRect r; float x; ImDrawList* dl; float cy; };
 
@@ -53,7 +49,6 @@ namespace imguimenu
         return c;
     }
 
-    // ------------------------------------------------ controls (laid out right -> left)
     inline bool Switch(RowCtx& c, bool* v) {
         const float W = 44.f, H = 26.f;
         ImVec2 p0(c.x - W, c.cy - H * 0.5f), save = ImGui::GetCursorScreenPos();
@@ -233,12 +228,11 @@ namespace imguimenu
         return changed;
     }
 
-    // ------------------------------------------------------------ sidebar bits
     inline void Icon(ImDrawList* dl, ImVec2 c, int id, ImU32 bg) {
         const float h = 11.f; const ImU32 w = IM_COL32_WHITE;
         dl->AddRectFilled(ImVec2(c.x - h, c.y - h), ImVec2(c.x + h, c.y + h), bg, 6.f);
         switch (id) {
-        case 0: // aim
+        case 0:
             dl->AddCircle(c, 5.5f, w, 0, 1.6f);
             dl->AddCircleFilled(c, 1.5f, w);
             dl->AddLine(ImVec2(c.x, c.y - 8.f), ImVec2(c.x, c.y - 4.f), w, 1.6f);
@@ -246,22 +240,22 @@ namespace imguimenu
             dl->AddLine(ImVec2(c.x - 8.f, c.y), ImVec2(c.x - 4.f, c.y), w, 1.6f);
             dl->AddLine(ImVec2(c.x + 4.f, c.y), ImVec2(c.x + 8.f, c.y), w, 1.6f);
             break;
-        case 1: // eye
+        case 1:
             dl->AddBezierQuadratic(ImVec2(c.x - 8.f, c.y), ImVec2(c.x, c.y - 9.f), ImVec2(c.x + 8.f, c.y), w, 1.6f, 16);
             dl->AddBezierQuadratic(ImVec2(c.x - 8.f, c.y), ImVec2(c.x, c.y + 9.f), ImVec2(c.x + 8.f, c.y), w, 1.6f, 16);
             dl->AddCircle(c, 2.4f, w, 0, 1.6f);
             break;
-        case 2: // players
+        case 2:
             dl->AddCircle(ImVec2(c.x, c.y - 3.5f), 3.f, w, 0, 1.6f);
             dl->AddBezierQuadratic(ImVec2(c.x - 6.5f, c.y + 6.f), ImVec2(c.x, c.y - 3.f), ImVec2(c.x + 6.5f, c.y + 6.f), w, 1.6f, 16);
             break;
-        case 3: // misc
+        case 3:
             dl->AddLine(ImVec2(c.x - 6.f, c.y - 3.5f), ImVec2(c.x + 6.f, c.y - 3.5f), w, 1.6f);
             dl->AddLine(ImVec2(c.x - 6.f, c.y + 3.5f), ImVec2(c.x + 6.f, c.y + 3.5f), w, 1.6f);
             dl->AddCircleFilled(ImVec2(c.x + 2.f, c.y - 3.5f), 2.2f, w);
             dl->AddCircleFilled(ImVec2(c.x - 2.f, c.y + 3.5f), 2.2f, w);
             break;
-        default: // config / folder
+        default:
             dl->AddRect(ImVec2(c.x - 6.f, c.y - 4.f), ImVec2(c.x + 6.f, c.y + 5.f), w, 2.f, 0, 1.6f);
             dl->AddLine(ImVec2(c.x - 6.f, c.y - 4.f), ImVec2(c.x - 2.f, c.y - 6.f), w, 1.6f);
             break;
@@ -294,4 +288,4 @@ namespace imguimenu
         dl->AddLine(ImVec2(p.x + 200.f, p.y + 1.f), ImVec2(p.x + 200.f, q.y - 1.f), IM_COL32(255, 255, 255, 30));
         dl->AddRect(p, q, IM_COL32(255, 255, 255, 45), 14.f);
     }
-} // namespace imguimenu
+}

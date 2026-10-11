@@ -11,10 +11,9 @@ extern bool isJumpAdjustmentEnabled;
 extern float jumpHeightMultiplier;
 extern float SlideRange;
 extern bool UnlimitedAmmo;
-extern bool UnlimitedFly;   // <-- Unlimited Fly toggle
+extern bool UnlimitedFly;
 extern std::chrono::steady_clock::time_point lastAmmoRefillTime;
 
-//-- Smart Reload
 namespace SmartReloadCfg
 {
     constexpr uintptr_t CarriedAmmoCountRva = 0x50EC6E8;
@@ -99,8 +98,6 @@ inline void hook_Pawn_StopFire(Pawn *instance, bool isImmidiately)
     SmartReloadRequestAfterStopFire(instance);
 }
 
-
-//-- Clear Terrain
 inline void (*orig_SetGrassShowState)(bool showGrass) = nullptr;
 inline void hook_SetGrassShowState(bool showGrass)
 {
@@ -137,7 +134,6 @@ inline void ApplyWorldVisualsRuntime()
     lastClearTerrain = Config.ExtraMenu.ClearTerrain;
 }
 
-//-- Aim Assist
 inline float (*orig_GetAssitAimSpeed)(void *, Vector3, float, float, float, bool, bool) = nullptr;
 inline float GetAssitAimSpeed(void * instance, Vector3 assistCentorPos, float assistDis, float dis, float angle, bool isPVE, bool gamepadInput) {
     if (instance != NULL) {
@@ -148,7 +144,6 @@ inline float GetAssitAimSpeed(void * instance, Vector3 assistCentorPos, float as
     return orig_GetAssitAimSpeed(instance, assistCentorPos, assistDis, dis, angle, isPVE, gamepadInput);
 }
 
-//-- Anti Flashbang
 inline void (*orig_OnFlashBangExplode)(void *, int, float, float, float) = nullptr;
 inline void hook_OnFlashBangExplode(void *instance, int weaponItemID, float whiteTime, float whiteAlphaTime, float initIntensity) {
     if (instance != nullptr && Config.ExtraMenu.Flash) {
@@ -159,7 +154,6 @@ inline void hook_OnFlashBangExplode(void *instance, int weaponItemID, float whit
     orig_OnFlashBangExplode(instance, weaponItemID, whiteTime, whiteAlphaTime, initIntensity);
 }
 
-//-- Firerate Speed  (+ Unlimited Fly reuses these hooks)
 inline float (*orig_get_FireBoltTime)(void *) = nullptr;
 inline float get_FireBoltTime(void * instance) {
     if (instance != NULL) {
@@ -204,14 +198,12 @@ void hooked_SetUltraFrameRateDeviceInfo(void* thiz, bool enableUltraFrameRate, i
     orig_SetUltraFrameRateDeviceInfo(thiz, enableUltraFrameRate, ultraFrameRate, ultraFrameRateBR, ultraFrameRateQualityLimit, customizedFrameRate);
 }
 
-//-- High Jump
 inline float (*orig_GetMaxJumpHeight)(void*) = nullptr;
 inline float hook_GetMaxJumpHeight(void* instance) {
     float orig_ = orig_GetMaxJumpHeight(instance);
     return (jumpHeightMultiplier > 1.0f) ? orig_ * jumpHeightMultiplier : orig_;
 }
 
-//-- Increase Damage
 inline bool (*orig_SingleLineCheckPhysics)(void* instance, int hitType, void* hitTarget, void* hitCollider, Vector3 startPos, Vector3 dir, void* impactInfo) = nullptr;
 inline bool SingleLineCheckPhysics(void* instance, int hitType, void* hitTarget, void* hitCollider, Vector3 startPos, Vector3 dir, void* impactInfo) {
     if (instance != NULL) {
@@ -222,7 +214,6 @@ inline bool SingleLineCheckPhysics(void* instance, int hitType, void* hitTarget,
     return orig_SingleLineCheckPhysics(instance, hitType, hitTarget, hitCollider, startPos, dir, impactInfo);
 }
 
-//-- Long Slide
 inline float (*o_get_SlideTackleAcclerationSpeed)(void*) = nullptr;
 inline float h_get_SlideTackleAcclerationSpeed(void* ins) {
     if (SlideRange > 0.0f) {
@@ -262,7 +253,6 @@ inline void h_TickLocalPlayer(void* ins, float deltaTime) {
     }
 }
 
-//-- No Overheat
 inline float (*orig_get_AddHotTime)(void* instance) = nullptr;
 inline float get_AddHotTime(void* instance) {
     if (instance != NULL) {
@@ -273,7 +263,6 @@ inline float get_AddHotTime(void* instance) {
     return orig_get_AddHotTime(instance);
 }
 
-//-- No Parachute
 inline void (*orig_OpenParachute)(void* instance, bool isAuto) = nullptr;
 inline void OpenParachute(void* instance, bool isAuto) {
     if (instance != NULL) {
@@ -284,7 +273,6 @@ inline void OpenParachute(void* instance, bool isAuto) {
     return orig_OpenParachute(instance, isAuto);
 }
 
-//-- Quick Reload
 inline float (*orig_get_ChangeClipTime)(void* instance) = nullptr;
 inline float get_ChangeClipTime(void* instance) {
     if (instance != NULL) {
@@ -305,7 +293,6 @@ inline float get_ChangeClipLoopTime(void* instance) {
     return orig_get_ChangeClipLoopTime(instance);
 }
 
-//-- Quick Scope
 inline float (*orig_get_AimingTime)(void* instance) = nullptr;
 inline float get_AimingTime(void* instance) {
     if (instance != NULL) {
@@ -316,7 +303,6 @@ inline float get_AimingTime(void* instance) {
     return orig_get_AimingTime(instance);
 }
 
-//-- Quick Switch
 inline float (*orig_get_EquipTime)(void* instance) = nullptr;
 inline float get_EquipTime(void* instance) {
     if (instance != NULL) {
@@ -337,7 +323,6 @@ inline float get_UnequipTime(void* instance) {
     return orig_get_UnequipTime(instance);
 }
 
-//-- Red Wallhack
 bool (*orig_IsInEM3Eye)(void *instance);
 bool get_IsInEM3Eye(void *instance) {
     if (instance != NULL) {
@@ -358,12 +343,10 @@ float GetAccDistance(void *instance) {
     return orig_GetAccDistance(instance);
 }
 
-//-- Skip Tutorial
 inline bool IsTutorialEnabled() {
     return false;
 }
 
-//-- Sky Diving Speed
 inline float (*orig_get_AccelerationForwardSpeedUp)(void* instance) = nullptr;
 inline float get_AccelerationForwardSpeedUp(void* instance) {
     if (instance != NULL) {
@@ -384,7 +367,6 @@ inline float get_MaxVelocityForwardSpeedUp(void* instance) {
     return orig_get_MaxVelocityForwardSpeedUp(instance);
 }
 
-//-- Snowboard Boost
 inline float (*get_m_PhysSkisMaxSpeed)(void*) = nullptr;
 inline float hooked_get_m_PhysSkisMaxSpeed(void* instance) {
     if (SnowBsize > 0.0f) {
@@ -393,7 +375,6 @@ inline float hooked_get_m_PhysSkisMaxSpeed(void* instance) {
     return get_m_PhysSkisMaxSpeed(instance);
 }
 
-//-- Speed Hack
 inline float (*original_CalcFinalMoveScale)(void*) = nullptr;
 inline float hooked_CalcFinalMoveScale(void* instance) {
     if (instance == nullptr) {
@@ -405,7 +386,6 @@ inline float hooked_CalcFinalMoveScale(void* instance) {
     return original_CalcFinalMoveScale(instance);
 }
 
-//-- Weapon Kinetic
 inline bool (*orig_get_IsKineticArmor)(void* instance) = nullptr;
 inline bool get_IsKineticArmor(void* instance) {
     if (instance != NULL) {
@@ -416,7 +396,6 @@ inline bool get_IsKineticArmor(void* instance) {
     return orig_get_IsKineticArmor(instance);
 }
 
-//-- Zero Recoil
 inline float (*orig_GetScaleRecoil)(void* instance) = nullptr;
 inline float GetScaleRecoil(void* instance) {
     if (instance != NULL) {
@@ -427,7 +406,6 @@ inline float GetScaleRecoil(void* instance) {
     return orig_GetScaleRecoil(instance);
 }
 
-//-- Zero Spread
 inline float (*orig_MinInaccuracy)(void *) = nullptr;
 inline float MinInaccuracy(void * instance) {
     if (instance != NULL) {
@@ -456,9 +434,8 @@ inline float DisperseBase(void * instance) {
         }
     }
     return orig_DisperseBase(instance);
-} 
+}
 
-// Unlock Blueprints
 inline bool (*orig_IsUnlocked)(void *instance);
 inline bool IsUnlocked(void *instance) {
     if (instance != NULL) {
@@ -479,7 +456,6 @@ inline bool IsWeaponAttachmentUnlock(void *instance) {
     return orig_IsWeaponAttachmentUnlock(instance);
 }
 
-// No Spectate Deelay
 inline bool (*o_NeedDelayProcess)(void *instance, int a, int b);
 inline bool h_NeedDelayProcess(void *instance, int a, int b) {
     bool orig_val = o_NeedDelayProcess(instance, a, b);
@@ -534,7 +510,6 @@ int get_DeviceCapacityLevel(void *instance) {
     return orig_get_DeviceCapacityLevel(instance);
 }
 
-// Hook for CheckTargetIsValid_DyingInAzurGameMode
 inline bool (*orig_CheckTargetIsValid_DyingInAzurGameMode)(void* instance, void* targetPawn);
 inline bool CheckTargetIsValid_DyingInAzurGameMode_Hook(void* instance, void* targetPawn) {
     if (instance != nullptr && targetPawn != nullptr) {
@@ -545,7 +520,6 @@ inline bool CheckTargetIsValid_DyingInAzurGameMode_Hook(void* instance, void* ta
     return orig_CheckTargetIsValid_DyingInAzurGameMode(instance, targetPawn);
 }
 
-// Hook for CheckTargetIsValid_PhysState
 inline bool (*orig_CheckTargetIsValid_PhysState)(void* instance, void* targetPawn);
 inline bool CheckTargetIsValid_PhysState_Hook(void* instance, void* targetPawn) {
     if (instance != nullptr && targetPawn != nullptr) {
@@ -556,7 +530,6 @@ inline bool CheckTargetIsValid_PhysState_Hook(void* instance, void* targetPawn) 
     return orig_CheckTargetIsValid_PhysState(instance, targetPawn);
 }
 
-// Hook for CheckTargetIsValid_ManualParameter
 inline bool (*orig_CheckTargetIsValid_ManualParameter)(void* instance, void* tempPawn, float* distance);
 inline bool CheckTargetIsValid_ManualParameter_Hook(void* instance, void* tempPawn, float* distance) {
     if (instance != nullptr && tempPawn != nullptr) {
@@ -567,7 +540,6 @@ inline bool CheckTargetIsValid_ManualParameter_Hook(void* instance, void* tempPa
     return orig_CheckTargetIsValid_ManualParameter(instance, tempPawn, distance);
 }
 
-// Hook for CheckTargetIsValid_Ult
 inline bool (*orig_CheckTargetIsValid_Ult)(void* instance, void* targetPawn);
 inline bool CheckTargetIsValid_Ult_Hook(void* instance, void* targetPawn) {
     if (instance != nullptr && targetPawn != nullptr) {
@@ -618,7 +590,6 @@ inline bool CheckCanExcution_Extra(void *ins) {
     return oCheckCanExcution_Extra(ins);
 }
 
-
 inline bool (*o_CheckExecution_ObstacleAround)(void *ins);
 inline bool CheckExecution_ObstacleAround(void *ins) {
     if (ins!=nullptr) {
@@ -629,7 +600,6 @@ inline bool CheckExecution_ObstacleAround(void *ins) {
     return o_CheckExecution_ObstacleAround(ins);
 }
 
-/// Walk Under Water
 inline bool (*oPawn_GetCurrentDistToWaterSurface)(void *instance);
 inline bool Pawn_GetCurrentDistToWaterSurface(void *instance) {
     if (instance != NULL) {
@@ -660,7 +630,6 @@ inline bool CheckInWaterComponent_get_CurrentWaterSurfaceHeight(void *instance) 
     return oCheckInWaterComponent_get_CurrentWaterSurfaceHeight(instance);
 }
 
-///Camera Pov
 float (*oInputSettingConfig_Instant_GetMainCameraFov_3p)(void *instance);
 float InputSettingConfig_Instant_GetMainCameraFov_3p(void *instance) {
     if (instance && Config.ExtraMenu.CameraPov) {
@@ -669,7 +638,6 @@ float InputSettingConfig_Instant_GetMainCameraFov_3p(void *instance) {
     return oInputSettingConfig_Instant_GetMainCameraFov_3p(instance);
 }
 
-//-- No Smoke
 inline bool NameHasSmokeToken(const char *name)
 {
     if (!name)
@@ -700,105 +668,80 @@ inline void hook_GameObjectSetActive(void *instance, bool value)
 
 inline void InitializeAllHooks() {
 
-    //-- Smart Reload
     HOOK_LIB("libunity.so", "0x5260B78", hook_Pawn_StopFire, orig_Pawn_StopFire);
 
-    //-- Aim Assist
     HOOK_LIB("libunity.so", "0x666FD90", GetAssitAimSpeed, orig_GetAssitAimSpeed);
 
-    //-- Anti Flashbang
     HOOK_LIB("libunity.so", "0x51E977C", hook_OnFlashBangExplode, orig_OnFlashBangExplode);
-    
-    //-- Firerate Speed  (+ Unlimited Fly reuses these hooks)
+
     HOOK_LIB("libunity.so", "0x51237F4", get_FireBoltTime, orig_get_FireBoltTime);
     HOOK_LIB("libunity.so", "0x5105C74", get_FireInterval, orig_get_FireInterval);
     HOOK_LIB("libunity.so", "0x513CBC4", get_DelaySprintFire, orig_get_DelaySprintFire);
 
-    //-- High Jump
     HOOK_LIB("libunity.so", "0x5221D00", hook_GetMaxJumpHeight, orig_GetMaxJumpHeight);
 
-    //-- Increase Damage
     HOOK_LIB("libunity.so", "0xC1514C0", SingleLineCheckPhysics, orig_SingleLineCheckPhysics);
 
-    //-- No Parachute
     HOOK_LIB("libunity.so", "0x68823FC", OpenParachute, orig_OpenParachute);
 
-    //-- Quick Reload
     HOOK_LIB("libunity.so", "0x50ECADC", get_ChangeClipTime, orig_get_ChangeClipTime);
 
-    //-- Quick Scope
     HOOK_LIB("libunity.so", "0x50EB944", get_AimingTime, orig_get_AimingTime);
 
-    //-- Quick Switch
     HOOK_LIB("libunity.so", "0x50ED8D4", get_EquipTime, orig_get_EquipTime);
 
-    //-- Red Wallhack
-    HOOK_LIB("libunity.so", "0x9677554", get_IsInEM3Eye, orig_IsInEM3Eye); 
+    HOOK_LIB("libunity.so", "0x9677554", get_IsInEM3Eye, orig_IsInEM3Eye);
     HOOK_LIB("libunity.so", "0xAD1DD78", GetAccDistance, orig_GetAccDistance);
 
-    //-- Skip Tutorial
     HOOK_LIB_NO_ORIG("libunity.so", "0x9DE0E58", IsTutorialEnabled);
-    
-    //-- Sky Diving Speed
+
     HOOK_LIB("libunity.so", "0x5DE981C", get_AccelerationForwardSpeedUp, orig_get_AccelerationForwardSpeedUp);
     HOOK_LIB("libunity.so", "0x5DE9880", get_MaxVelocityForwardSpeedUp, orig_get_MaxVelocityForwardSpeedUp);
 
-    //-- Snowboard Boost
     HOOK_LIB("libunity.so", "0x522860C", hooked_get_m_PhysSkisMaxSpeed, get_m_PhysSkisMaxSpeed);
 
-    //-- Speed Hack
     HOOK_LIB("libunity.so", "0x51D2EB8", hooked_CalcFinalMoveScale, original_CalcFinalMoveScale);
 
-    //-- Weapon Kinetic
     HOOK_LIB("libunity.so", "0x51B3D64", get_IsKineticArmor, orig_get_IsKineticArmor);
 
-    //-- Zero Recoil
     HOOK_LIB("libunity.so", "0xC9BAFF8", GetScaleRecoil, orig_GetScaleRecoil);
 
-    //-- Zero Spread
     HOOK_LIB("libunity.so", "0xC9B8F78", MinInaccuracy, orig_MinInaccuracy);
     HOOK_LIB("libunity.so", "0xC159288", MaxInaccuracy, orig_MaxInaccuracy);
     HOOK_LIB("libunity.so", "0xC9C76C4", DisperseBase, orig_DisperseBase);
-    
-    //-- Spectate
+
     HOOK_LIB("libunity.so", "0x519676C", h_ProcessForDelay, o_ProcessForDelay);
     HOOK_LIB("libunity.so", "0x51966D8", h_NeedDelayProcess, o_NeedDelayProcess);
-    HOOK_LIB("libunity.so", "0x519676C", h_ProcessForDelay, o_ProcessForDelay);  
+    HOOK_LIB("libunity.so", "0x519676C", h_ProcessForDelay, o_ProcessForDelay);
 
-    //-- No smoke
     UnityObject_get_name = reinterpret_cast<String *(*)(void *)>(
           getAbsoluteAddress("libunity.so", 0x5052F10));
 
     DobbyHook((void *)getAbsoluteAddress("libunity.so", 0x5036EB8),
           (void *)&hook_GameObjectSetActive,
           (void **)&orig_GameObjectSetActive);
-          
-    //-- Throwable Alert      
+
     DobbyHook((void *)getAbsoluteAddress("libunity.so", ThrowAlertCfg::TickRva),
           (void *)&hook_WeaponProjectileTick,
           (void **)&orig_WeaponProjectileTick);
-          
-    //-- Clear Terrain
+
     DobbyHook((void *)getAbsoluteAddress("libunity.so", 0xAE2E1B0),
           (void *)&hook_SetGrassShowState,
           (void **)&orig_SetGrassShowState);
 
     DobbyHook((void *)getAbsoluteAddress("libunity.so", 0x7B4E290),
           (void *)&hook_SetGrassLODBias,
-          (void **)&orig_SetGrassLODBias);         
-          
+          (void **)&orig_SetGrassLODBias);
+
     DobbyHook((void*)getAbsoluteAddress("libunity.so", 0x9FDEE28), (void*)hooked_SetUltraFrameRateDeviceInfo, (void**)&orig_SetUltraFrameRateDeviceInfo);
 
-    ///Walk Under Water
-    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x51D31BC), (void *)  &Pawn_GetCurrentDistToWaterSurface, (void **) &oPawn_GetCurrentDistToWaterSurface); 
-    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x54BC450), (void *)  &PlayerPawn_IsUnderWaterSurface, (void **) &oPlayerPawn_IsUnderWaterSurface); 
-    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x757162C), (void *)  &CheckInWaterComponent_get_CurrentWaterSurfaceHeight, (void **) &oCheckInWaterComponent_get_CurrentWaterSurfaceHeight); 
+    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x51D31BC), (void *)  &Pawn_GetCurrentDistToWaterSurface, (void **) &oPawn_GetCurrentDistToWaterSurface);
+    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x54BC450), (void *)  &PlayerPawn_IsUnderWaterSurface, (void **) &oPlayerPawn_IsUnderWaterSurface);
+    DobbyHook((void *) getAbsoluteAddress("libunity.so", 0x757162C), (void *)  &CheckInWaterComponent_get_CurrentWaterSurfaceHeight, (void **) &oCheckInWaterComponent_get_CurrentWaterSurfaceHeight);
 
-  ///Camera Pov
-  DobbyHook((void *) getAbsoluteAddress("libunity.so", 0xC347950), (void *)  &InputSettingConfig_Instant_GetMainCameraFov_3p, (void **) &oInputSettingConfig_Instant_GetMainCameraFov_3p); 
+  DobbyHook((void *) getAbsoluteAddress("libunity.so", 0xC347950), (void *)  &InputSettingConfig_Instant_GetMainCameraFov_3p, (void **) &oInputSettingConfig_Instant_GetMainCameraFov_3p);
 
-    //-- Unlock Blueprints
     HOOK_LIB("libunity.so", "0x901F988", IsUnlocked, orig_IsUnlocked);
-    
+
     HOOK_LIB("libunity.so", "0xA61AA00", IsWeaponAttachmentUnlock, orig_IsWeaponAttachmentUnlock);
 }

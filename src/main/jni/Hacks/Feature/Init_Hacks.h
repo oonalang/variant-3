@@ -92,7 +92,7 @@ struct sConfig {
         uintptr_t thiz;
     };
     sInitImGui ImGuiMenu{0};
-    
+
 struct sWeaponAim {
         bool Aimbot360;
         float AimAssistSize;
@@ -102,23 +102,22 @@ struct sWeaponAim {
         EAim By;
         float size;
         float Cross;
-        
-         // Frame Rate Controls
+
         bool FpsLevel;
         float FpsLevel1;
         bool showFPSLevelSlider;
 
-        bool FpsLevelUltra;              // New: toggle for Ultra FPS
-        float FpsLevelUltra1 = 240.0f;   // Default Ultra FPS value
-        bool showFPSLevelUltraSlider;    // New: show Ultra FPS slider
+        bool FpsLevelUltra;
+        float FpsLevelUltra1 = 240.0f;
+        bool showFPSLevelUltraSlider;
     };
     sWeaponAim Aim{0};
-    
+
     struct sESPMenuLineScale {
         float lineSize;
     };
     sESPMenuLineScale sESPMenuLineScale{0};
-    
+
     struct sESPMenu {
         bool Signal;
         bool Alert;
@@ -144,7 +143,7 @@ struct sWeaponAim {
         bool Aimline;
     };
     sESPMenu ESPMenu{0};
-    
+
     struct sColorsESPPLAYER {
     float *LinePLAYER;
     float *BoxPLAYER;
@@ -164,12 +163,12 @@ struct sColorsESPBOT {
     float *SkeletonBOT;
 };
 sColorsESPBOT sColorsESPBOT{0};
-    
+
     struct sColorsESPOTHERS {
         float *PovOTHERS;
     };
     sColorsESPOTHERS sColorsESPOTHERS{0};
-    
+
     struct sExtraMenu {
         bool SmartReload;
         bool NoGravity;
@@ -220,7 +219,7 @@ sColorsESPBOT sColorsESPBOT{0};
     sExtraMenu ExtraMenu{0};
 
 	struct sColorsESP {
-	
+
         float *Vehicle;
     };
     sColorsESP ColorsESP{0};

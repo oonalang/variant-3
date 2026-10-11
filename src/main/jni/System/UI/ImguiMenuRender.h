@@ -1,19 +1,5 @@
-// ===========================================================================
-// ImguiMenuRender.h - Full screen-layout port of the reference menu
-// (https://github.com/eliwoahzja/imguimenu, src::menu.h -> our render root)
-//
-// REUSE-MAP (old UI call site -> new call site, zero logic change):
-//   custom::Checkbox(&Config ...)            -> imguimenu::Switch(...) with the
-//                                               same pointer (write path identical)
-//   custom::SliderFloat(...)                 -> imguimenu::Slider(...) same ptr/range
-//   custom::Combo(int*)                      -> imguimenu::Combo / Segmented same int*
-//   Enum + int-loop writes (BoxType etc.)    -> kept as-is, indexes unchanged
-//   memcpy linked-color rows (player/bot)    -> ColorDot on LinePLAYER/LINEBOT with
-//                                               same CopyLinkedEspColors flow
-//   RenderSkinCategoryContent / SettingsTab  -> reused verbatim inside new cards
-//   runtime_preview_menu popups (info/price) -> reused verbatim (same popups)
-// Old ones stay until confirmed stable; Drop-in replaces runtime content body.
-// ===========================================================================
+
+
 #pragma once
 
 #include "ImguiMenuWidgets.h"
@@ -37,13 +23,12 @@ extern int skinSubTab;
 
 namespace imguimenu
 {
-    // ------------------------------------------------- the old State, extended
+
     struct State
     {
         int tab = 0;
         char search[64] = {};
 
-        // aimbot
         bool  aim_enabled     = true;
         bool  visible_only    = true;
         bool  team_check      = false;
@@ -54,7 +39,6 @@ namespace imguimenu
         ImGuiKey aim_key      = ImGuiKey_MouseRight;
         int   preset          = 0;
 
-        // esp
         bool  esp_enabled     = true;
         bool  box             = true;
         bool  name            = true;
@@ -69,7 +53,6 @@ namespace imguimenu
         int   font_size       = 12;
     };
 
-    // ------------------------------------------------------------ pages
     inline void AimPage(State& s, float childH = 420.f)
     {
         static const char* hitboxes[] = { "Head", "Neck", "Chest" };
@@ -210,8 +193,7 @@ namespace imguimenu
         ImGui::PopStyleVar();
     }
 
-    // ------------------------------------------------------------ render root
-    // Ported verbatim layout (880x560, sidebar 200, 5 tabs) from menu.h Render().
+
     inline void Render(State& s, bool* open = nullptr)
     {
         const ImVec2 size(880.f, 560.f);
@@ -231,7 +213,6 @@ namespace imguimenu
         const ImVec2 wp = ImGui::GetWindowPos();
         DrawBackground(dl, wp, size);
 
-        // ---------------- sidebar
         ImGui::SetCursorPos(ImVec2(0, 0));
         ImGui::BeginChild("##sb", ImVec2(200.f, size.y), 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar);
         {
@@ -267,7 +248,6 @@ namespace imguimenu
         }
         ImGui::EndChild();
 
-        // ---------------- content
         ImGui::SetCursorPos(ImVec2(200.f, 0));
         ImGui::BeginChild("##content", ImVec2(680.f, size.y), 0, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar);
         {
@@ -284,7 +264,6 @@ namespace imguimenu
             cdl->AddText(ImGui::GetFont(), 30.f, ImVec2(cp.x + 25.7f, cp.y + 22.f), COL_TEXT, titles[pageCursor]);
             cdl->AddText(ImGui::GetFont(), 16.f, ImVec2(cp.x + 25.f, cp.y + 56.f), DIM, subs[pageCursor]);
 
-            // window buttons
             struct WB { float px; ImU32 col; bool close; };
             static const WB wbs[] = {
                 { 638.f, IM_COL32(255, 189, 46, 255), false },
@@ -320,7 +299,6 @@ namespace imguimenu
             else if (pageCursor == 4) DataMiscPage(contentW, childH);
             else if (pageCursor == 5) DataConfigPage(contentW, childH);
 
-            // help button
             ImVec2 hc(cp.x + 25.f + 11.f, cp.y + size.y - 38.f);
             cdl->AddCircleFilled(hc, 14.f, IM_COL32(120, 120, 128, 140), 24);
             ImVec2 ts = ImGui::CalcTextSize("?");
@@ -331,4 +309,4 @@ namespace imguimenu
         ImGui::PopStyleVar(4);
     }
 
-} // namespace imguimenu
+}

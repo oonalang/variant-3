@@ -44,9 +44,9 @@ enum EVehicleType {
 
 std::string EVehicleToString(EVehicleType eVehicleType) {
     std::string strVehicle;
-    
+
     switch(eVehicleType) {
-    
+
     case eVehicleType_Plane:
         strVehicle += std::string(OBFUSCATE("Plane"));
         break;

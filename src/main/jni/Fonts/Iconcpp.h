@@ -1,10 +1,5 @@
 #pragma once
 
-/**
- * @autor SPraditya
- * email help : foxcheatsid@gmail.com
- */
-
 static const unsigned int font_awesome_size1 = 124565;
 static const unsigned int font_awesome_data1[124568 / 4] =
 {

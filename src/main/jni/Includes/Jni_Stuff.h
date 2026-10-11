@@ -30,10 +30,10 @@ time_t parseExpiryDate(const std::string& dateStr) {
     std::istringstream ss(dateStr);
     ss >> std::get_time(&tm, "%Y-%m-%d");
 
-    tm.tm_hour = 23;  
-    tm.tm_min = 59;  
-    tm.tm_sec = 59;  
-      
+    tm.tm_hour = 23;
+    tm.tm_min = 59;
+    tm.tm_sec = 59;
+
     return mktime(&tm);
 }
 
@@ -137,7 +137,7 @@ struct MemoryStruct {
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
     size_t realsize = size * nmemb;
     struct MemoryStruct *mem = (struct MemoryStruct *) userp;
-    
+
     mem->memory = (char *) realloc(mem->memory, mem->size + realsize + 1);
     if (mem->memory == NULL) {
         return 0;
@@ -151,100 +151,100 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 int ShowSoftKeyboardInput() {
     jint result;
     jint flags = 0;
-    
+
     JNIEnv *env;
     jvm->AttachCurrentThread(&env, NULL);
-    
+
     jclass looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
-    
+
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
     jobject sCurrentActivityThread = env->GetStaticObjectField(activityThreadClass, sCurrentActivityThreadField);
-    
+
     jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, "mInitialApplication", "Landroid/app/Application;");
     jobject mInitialApplication = env->GetObjectField(sCurrentActivityThread, mInitialApplicationField);
-    
+
     jclass contextClass = env->FindClass("android/content/Context");
     jfieldID fieldINPUT_METHOD_SERVICE = env->GetStaticFieldID(contextClass, "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
     jobject INPUT_METHOD_SERVICE = env->GetStaticObjectField(contextClass, fieldINPUT_METHOD_SERVICE);
     jmethodID getSystemServiceMethod = env->GetMethodID(contextClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
     jobject callObjectMethod = env->CallObjectMethod(mInitialApplication, getSystemServiceMethod, INPUT_METHOD_SERVICE);
-    
+
     jclass classInputMethodManager = env->FindClass("android/view/inputmethod/InputMethodManager");
     jmethodID toggleSoftInputId = env->GetMethodID(classInputMethodManager, "toggleSoftInput", "(II)V");
-    
+
     if (result) {
         env->CallVoidMethod(callObjectMethod, toggleSoftInputId, 2, flags);
     } else {
         env->CallVoidMethod(callObjectMethod, toggleSoftInputId, flags, flags);
     }
-    
+
     env->DeleteLocalRef(classInputMethodManager);
     env->DeleteLocalRef(callObjectMethod);
     env->DeleteLocalRef(contextClass);
     env->DeleteLocalRef(mInitialApplication);
     env->DeleteLocalRef(activityThreadClass);
     jvm->DetachCurrentThread();
-    
+
     return result;
 }
 
 int PollUnicodeChars() {
     JNIEnv *env;
     jvm->AttachCurrentThread(&env, NULL);
-    
+
     jclass looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
-    
+
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
     jobject sCurrentActivityThread = env->GetStaticObjectField(activityThreadClass, sCurrentActivityThreadField);
-    
+
     jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, "mInitialApplication", "Landroid/app/Application;");
     jobject mInitialApplication = env->GetObjectField(sCurrentActivityThread, mInitialApplicationField);
-    
+
     jclass keyEventClass = env->FindClass("android/view/KeyEvent");
     jmethodID getUnicodeCharMethod = env->GetMethodID(keyEventClass, "getUnicodeChar", "(I)I");
-    
+
     ImGuiIO& io = ImGui::GetIO();
-    
+
     int return_key = env->CallIntMethod(keyEventClass, getUnicodeCharMethod);
-    
+
     env->DeleteLocalRef(keyEventClass);
     env->DeleteLocalRef(mInitialApplication);
     env->DeleteLocalRef(activityThreadClass);
     jvm->DetachCurrentThread();
-    
+
     return return_key;
 }
 
 std::string getClipboard() {
     std::string result;
     JNIEnv *env;
-    
+
     jvm->AttachCurrentThread(&env, NULL);
-    
+
     auto looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
-    
+
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
     jobject sCurrentActivityThread = env->GetStaticObjectField(activityThreadClass, sCurrentActivityThreadField);
-    
+
     jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, "mInitialApplication", "Landroid/app/Application;");
     jobject mInitialApplication = env->GetObjectField(sCurrentActivityThread, mInitialApplicationField);
-    
+
     auto contextClass = env->FindClass("android/content/Context");
     auto getSystemServiceMethod = env->GetMethodID(contextClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
-    
+
     auto str = env->NewStringUTF("clipboard");
     auto clipboardManager = env->CallObjectMethod(mInitialApplication, getSystemServiceMethod, str);
     env->DeleteLocalRef(str);
-    
+
     jclass ClipboardManagerClass = env->FindClass("android/content/ClipboardManager");
     auto getText = env->GetMethodID(ClipboardManagerClass, "getText", "()Ljava/lang/CharSequence;");
 
@@ -271,18 +271,18 @@ std::string getClipboard() {
 std::string Login(const char *user_key) {
     JNIEnv *env;
     jvm->AttachCurrentThread(&env, 0);
-    
+
     auto looperClass = env->FindClass("android/os/Looper");
     auto prepareMethod = env->GetStaticMethodID(looperClass, "prepare", "()V");
     env->CallStaticVoidMethod(looperClass, prepareMethod);
-    
+
     jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
     jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, "sCurrentActivityThread", "Landroid/app/ActivityThread;");
     jobject sCurrentActivityThread = env->GetStaticObjectField(activityThreadClass, sCurrentActivityThreadField);
-    
+
     jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, "mInitialApplication", "Landroid/app/Application;");
     jobject mInitialApplication = env->GetObjectField(sCurrentActivityThread, mInitialApplicationField);
-    
+
     std::string hwid = user_key;
     hwid += GetAndroidID(env, mInitialApplication);
     hwid += GetDeviceModel(env);
@@ -290,31 +290,31 @@ std::string Login(const char *user_key) {
     std::string UUID = GetDeviceUniqueIdentifier(env, hwid.c_str());
     jvm->DetachCurrentThread();
     std::string errMsg;
-	usedKey = user_key;  
-    
-	if (isVipKey(user_key)) {  
-        userType = "DELUXE PAID";  
-    } else {  
-        userType = "DELUXE PAID";  
-    }  
-	
+	usedKey = user_key;
+
+	if (isVipKey(user_key)) {
+        userType = "DELUXE PAID";
+    } else {
+        userType = "DELUXE PAID";
+    }
+
     struct MemoryStruct chunk{};
     chunk.memory = (char *) malloc(1);
     chunk.size = 0;
-    
+
     CURL *curl;
     CURLcode res;
     curl = curl_easy_init();
-    
+
     if (curl) {
         std::string api_url = oxorany("https://xlreyt.x10.mx/connect");
         curl_easy_setopt(curl, CURLOPT_URL, api_url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
-        
+
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
-        
+
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         char data[4096];
         sprintf(data, "game=CODMDL&user_key=%s&serial=%s", user_key, UUID.c_str());
@@ -323,7 +323,7 @@ std::string Login(const char *user_key) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &chunk);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        
+
         res = curl_easy_perform(curl);
         if (res == CURLE_OK) {
             try {
@@ -331,11 +331,11 @@ std::string Login(const char *user_key) {
                 if (result["status"] == true) {
                     std::string token = result["data"]["token"].get<std::string>();
                     time_t rng = result["data"]["rng"].get<time_t>();
-					
-					EXP = result["data"]["EXP"].get<std::string>();  
-                               
-                    expiryTimestamp = parseExpiryDate(EXP);  
-					
+
+					EXP = result["data"]["EXP"].get<std::string>();
+
+                    expiryTimestamp = parseExpiryDate(EXP);
+
                     if (rng + 30 > time(0)) {
                         std::string auth = "CODMDL";
                         auth += "-";
@@ -344,7 +344,7 @@ std::string Login(const char *user_key) {
                         auth += UUID;
                         auth += "-";
                         auth += "Vm8Lk7Uj2JmsjCPVPVjrLa7zgfx3uz9E";
-                        
+
                         std::string outputAuth = CalcMD5(auth);
                         g_Token = token;
                         g_Auth = outputAuth;

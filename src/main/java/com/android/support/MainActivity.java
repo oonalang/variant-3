@@ -1,4 +1,4 @@
-// MainActivity.java - Red Themed Version
+
 package com.android.support;
 
 import android.app.Activity;
@@ -89,7 +89,6 @@ public class MainActivity extends Activity {
         mainContainer.setBackground(mainBackground);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) mainContainer.setElevation(12f);
 
-        // Icon
         LinearLayout iconContainer = new LinearLayout(this);
         iconContainer.setGravity(Gravity.CENTER);
         iconContainer.setPadding(0, 0, 0, 40);
@@ -113,7 +112,6 @@ public class MainActivity extends Activity {
         iconContainer.addView(iconText);
         mainContainer.addView(iconContainer);
 
-        // Title
         titleText = new TextView(this);
         titleText.setText("Cluddy Library Update");
         titleText.setTextSize(26);
@@ -124,7 +122,6 @@ public class MainActivity extends Activity {
         titleText.getPaint().setFakeBoldText(true);
         mainContainer.addView(titleText);
 
-        // Subtitle
         subtitleText = new TextView(this);
         subtitleText.setText("Preparing download...");
         subtitleText.setTextSize(16);
@@ -133,7 +130,6 @@ public class MainActivity extends Activity {
         subtitleText.setPadding(0, 0, 0, 56);
         mainContainer.addView(subtitleText);
 
-        // Progress Container
         LinearLayout progressContainer = new LinearLayout(this);
         progressContainer.setOrientation(LinearLayout.VERTICAL);
         progressContainer.setPadding(20, 20, 20, 20);
@@ -166,7 +162,6 @@ public class MainActivity extends Activity {
         progressBarContainer.addView(progressBar);
         progressContainer.addView(progressBarContainer);
 
-        // Texts below progress
         LinearLayout progressTextContainer = new LinearLayout(this);
         progressTextContainer.setOrientation(LinearLayout.HORIZONTAL);
         progressTextContainer.setPadding(8, 0, 8, 0);
@@ -191,7 +186,6 @@ public class MainActivity extends Activity {
         progressContainer.addView(progressTextContainer);
         mainContainer.addView(progressContainer);
 
-        // Status
         LinearLayout statusContainer = new LinearLayout(this);
         statusContainer.setOrientation(LinearLayout.HORIZONTAL);
         statusContainer.setGravity(Gravity.CENTER);

@@ -203,14 +203,14 @@ static bool DrawTieredSkinCheckbox(const char* label, bool* value, std::function
     std::string rawLabel = label;
     const SkinTier tier = DetectSkinTier(rawLabel);
     const std::string cleanLabel = StripTierTag(rawLabel);
-    
+
     ImGui::PushID(label);
-    
+
     const bool pressed = custom::Checkbox("##skin_checkbox", value);
     if (pressed && applySkin) {
-        applySkin(); 
+        applySkin();
     }
-    
+
     const bool hovered = ImGui::IsItemHovered();
     const ImVec2 rowMin = ImGui::GetItemRectMin();
     const ImVec2 rowMax = ImGui::GetItemRectMax();
@@ -219,7 +219,7 @@ static bool DrawTieredSkinCheckbox(const char* label, bool* value, std::function
     ImFont* labelFont = font::inter_semibold ? font::inter_semibold : ImGui::GetFont();
     const float labelSize = labelFont->FontSize * 0.84f;
 
-    float currentX = rowMin.x + 35.0f * su; 
+    float currentX = rowMin.x + 35.0f * su;
 
     if (tier != SkinTier::None) {
         const char* badgeText = "";
@@ -240,10 +240,10 @@ static bool DrawTieredSkinCheckbox(const char* label, bool* value, std::function
             badgeFg = IM_COL32(227, 196, 255, 250);
         } else if (tier == SkinTier::Common) {
             badgeText = "COMMON";
-            badgeBg = IM_COL32(23, 74, 40, 200);     
-            badgeFg = IM_COL32(74, 222, 128, 255);    
+            badgeBg = IM_COL32(23, 74, 40, 200);
+            badgeFg = IM_COL32(74, 222, 128, 255);
         }
-        
+
         const ImVec2 badgeTextSize = labelFont->CalcTextSizeA(labelSize, FLT_MAX, 0.0f, badgeText);
         const float badgePadX = 6.0f * su;
         const float badgePadY = 2.0f * su;
@@ -256,12 +256,12 @@ static bool DrawTieredSkinCheckbox(const char* label, bool* value, std::function
         dl->AddRectFilled(badgeMin, badgeMax, badgeBg, 4.0f * su);
         dl->AddText(labelFont, labelSize, ImVec2(badgeMin.x + badgePadX, badgeMin.y + badgePadY), badgeFg, badgeText);
 
-        currentX += badgeW + (6.0f * su); 
+        currentX += badgeW + (6.0f * su);
     }
-    
+
     const ImVec2 nameSize = labelFont->CalcTextSizeA(labelSize, FLT_MAX, 0.0f, cleanLabel.c_str());
     const float nameY = rowMin.y + (rowMax.y - rowMin.y - nameSize.y) * 0.5f;
-    
+
     dl->AddText(
         labelFont,
         labelSize,
@@ -269,7 +269,7 @@ static bool DrawTieredSkinCheckbox(const char* label, bool* value, std::function
         hovered ? IM_COL32(240, 232, 248, 255) : IM_COL32(236, 240, 246, 255),
         cleanLabel.c_str()
     );
-    
+
     ImGui::PopID();
     return pressed;
 }
@@ -299,37 +299,36 @@ inline void SelectSnowboardSkin(int skinId)
 
 inline void RenderSkinCategoryContent(int categoryIndex, bool drawSubTabs = false) {
 
-    // --- Camo States ---
     static bool camoOff = true;
     static bool camoDiamond = false;
-    static bool camoRedSprite = false; 
+    static bool camoRedSprite = false;
     static bool camoGold = false;
     static bool camoPlatinum = false;
     static bool camoDamascus = false;
     static bool camoAetherCrystal = false;
     static bool camoGlacialRipple = false;
-    
-    #define ID_DIAMOND 0x1D37F758 
-    #define ID_RED_SPRITE 0x1D37F77E 
+
+    #define ID_DIAMOND 0x1D37F758
+    #define ID_RED_SPRITE 0x1D37F77E
     #define ID_GOLD 0x1D37F755
     #define ID_PLATINUM 0x1D37F756
     #define ID_DAMASCUS 0x1D37F757
     #define ID_AETHER_CRYSTAL 0x1D37F77D
     #define ID_GLACIAL_RIPPLE 0x1D37F77F
-    
+
     ImGui::BeginChild("SkinContent", ImVec2(0, 0));
     ImGui::Dummy(ImVec2(0, 8 * c::scale));
-    
+
     if (drawSubTabs) {
         const float tabSpacing = 8.0f * c::scale;
         const float tabHeight = 34.0f * c::scale;
-        // Pinalitan ang / 5.0f ng / 6.0f para magkasya ang 6 na sub-tabs sa isang linya
+
         const float tabWidth = ImMax(32.0f, (ImGui::GetContentRegionAvail().x - tabSpacing * 6.0f) / 7.0f);
         ImFont* subTabFont = font::inter_semibold ? font::inter_semibold : F50;
-        
+
         if (subTabFont) ImGui::PushFont(subTabFont);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(tabSpacing, tabSpacing));
-        
+
         if (custom::Page(skinSubTab == 0, "Character", ImVec2(tabWidth, tabHeight), false, false)) skinSubTab = 0;
         ImGui::SameLine();
         if (custom::Page(skinSubTab == 1, "Watch", ImVec2(tabWidth, tabHeight), false, false)) skinSubTab = 1;
@@ -351,18 +350,18 @@ inline void RenderSkinCategoryContent(int categoryIndex, bool drawSubTabs = fals
     static bool charSearchWasActive = false;
     bool charActive = false;
     bool charHovered = false;
-    
+
     ImGui::Indent(10.0f);
     float totalAvail = ImGui::GetContentRegionAvail().x - 20.0f;
     float halfWidth = (totalAvail - 10.0f) * 0.5f;
     float searchWidth = (skinSubTab == 0) ? halfWidth : totalAvail;
-    
+
     ImGui::TextColored(c::text::text_active, "Search Skin:");
     if (skinSubTab == 0) {
         ImGui::SameLine(halfWidth + 20.0f);
         ImGui::TextColored(c::text::text_active, "Search Custom Char:");
     }
-    
+
     ImGui::AstralInput("##SearchSkin", searchQuery, IM_ARRAYSIZE(searchQuery), ImVec2(searchWidth, 50));
     bool skinClicked = ImGui::IsItemClicked();
     bool skinActive  = ImGui::IsItemActive();
@@ -372,7 +371,7 @@ inline void RenderSkinCategoryContent(int categoryIndex, bool drawSubTabs = fals
         showKeyboard = true;
     }
     skinSearchWasActive = skinActive;
-    
+
     if (skinSubTab == 0) {
         ImGui::SameLine(0.0f, 10.0f);
         ImGui::AstralInput("##SearchCustomChar", charSearchQuery, IM_ARRAYSIZE(charSearchQuery), ImVec2(halfWidth, 50));
@@ -385,7 +384,7 @@ inline void RenderSkinCategoryContent(int categoryIndex, bool drawSubTabs = fals
         }
         charSearchWasActive = charActive;
     }
-        
+
     if (showKeyboard && !skinActive && (skinSubTab != 0 || (!charSearchWasActive && !charActive && !charHovered)) && ImGui::IsMouseClicked(0)) {
         ImGuiIO& io = ImGui::GetIO();
         float screenHeight = io.DisplaySize.y;
@@ -534,7 +533,6 @@ case 0:
                         }
                     }
 
-                    // ITEM RESOURCE
                     for (auto itemRes : itemResourceConfigInstance) {
 
                         if (!itemRes)
@@ -548,17 +546,14 @@ case 0:
                             itf->FxAssetID          = getchar.charRes[0];
                             itf->InventoryModelID   = getchar.charRes[1];
                             itf->ModelAssetIDRaw    = getchar.charRes[2];
-                            // charRes is the only character-resource array
-                            // available in the supplied character data (3 entries).
+
                             itf->UIMiniSpriteNameIndex  = getchar.charRes[0];
                             itf->UISmallSpriteNameIndex = getchar.charRes[1];
                             itf->UISpriteNameIndex      = getchar.charRes[2];
 
-                            // The supplied character data has no 4th sprite-index
-                            // value, so do not read charRes[3] or a nonexistent
-                            // charRes2 member. Keep the square sprite unchanged.
-                            // If your Fields.h defines a separate 4-element array,
-                            // replace this line with that array's [3] value.
+
+
+
 
                         }
                     }
@@ -979,7 +974,7 @@ case 3:
         break;
 
     case 5:
-        // --- Camo Manager Tab Content ---
+
         ImGui::TextColored(ImVec4(1, 0.8f, 0, 1), "Inject Camo to Mythic/Legendary Skins");
         ImGui::Dummy(ImVec2(0, 10));
 
@@ -1016,7 +1011,7 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_DIAMOND; 
+                                weaponconfFields->DefWeaponSkinID = ID_DIAMOND;
                             }
                         }
                     }
@@ -1034,14 +1029,14 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_RED_SPRITE; 
+                                weaponconfFields->DefWeaponSkinID = ID_RED_SPRITE;
                             }
                         }
                     }
                 }
             }
         }
-        
+
         if (custom::Checkbox("Gold Camo", &camoGold)) {
             if (camoGold) {
                 camoOff = false;
@@ -1052,14 +1047,14 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_GOLD; 
+                                weaponconfFields->DefWeaponSkinID = ID_GOLD;
                             }
                         }
                     }
                 }
             }
         }
-        
+
         if (custom::Checkbox("Platimun Camo", &camoPlatinum)) {
             if (camoPlatinum) {
                 camoOff = false;
@@ -1070,14 +1065,14 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_PLATINUM; 
+                                weaponconfFields->DefWeaponSkinID = ID_PLATINUM;
                             }
                         }
                     }
                 }
             }
         }
-        
+
         if (custom::Checkbox("Damascus Camo", &camoDamascus)) {
             if (camoDamascus) {
                 camoOff = false;
@@ -1088,14 +1083,14 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_DAMASCUS; 
+                                weaponconfFields->DefWeaponSkinID = ID_DAMASCUS;
                             }
                         }
                     }
                 }
             }
         }
-        
+
         if (custom::Checkbox("Aether Crystal Camo", &camoAetherCrystal)) {
             if (camoAetherCrystal) {
                 camoOff = false;
@@ -1106,14 +1101,14 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_AETHER_CRYSTAL; 
+                                weaponconfFields->DefWeaponSkinID = ID_AETHER_CRYSTAL;
                             }
                         }
                     }
                 }
             }
         }
-           
+
         if (custom::Checkbox("Glacial Ripple Camo", &camoGlacialRipple)) {
             if (camoGlacialRipple) {
                 camoOff = false;
@@ -1124,7 +1119,7 @@ case 3:
                             if (!conf) continue;
                             weaponconfFields = (WeaponConfFields*)((uintptr_t)conf + 0x20);
                             if (weaponconfFields->ID == getitem.WeaponConf[2]) {
-                                weaponconfFields->DefWeaponSkinID = ID_GLACIAL_RIPPLE; 
+                                weaponconfFields->DefWeaponSkinID = ID_GLACIAL_RIPPLE;
                             }
                         }
                     }
@@ -1134,7 +1129,7 @@ case 3:
     break;
     case 6:
         if (!snowboardData.empty()) {
-            // Selected (ON) first
+
             for (const auto& sb : snowboardData) {
                 if (strlen(searchQuery) >= MIN_SEARCH_LENGTH &&
                     ToLower(sb.skinName).find(searchLower) == std::string::npos)
@@ -1157,7 +1152,7 @@ case 3:
                     ImGui::PopStyleVar();
                 }
             }
-            // Unselected (OFF) below
+
             for (const auto& sb : snowboardData) {
                 if (strlen(searchQuery) >= MIN_SEARCH_LENGTH &&
                     ToLower(sb.skinName).find(searchLower) == std::string::npos)

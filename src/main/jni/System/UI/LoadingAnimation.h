@@ -32,7 +32,7 @@ static float    g_RingRot[4]  = {0.0f, 0.0f, 0.0f, 0.0f};
 static bool     g_RingLock[4] = {false, false, false, false};
 
 namespace C {
-    // --- PURPLE THEME ---
+
     static const ImVec4 Purple     = {0.65f, 0.35f, 1.00f, 1.000f};
     static const ImVec4 PurpleBrt  = {0.80f, 0.50f, 1.00f, 1.000f};
     static const ImVec4 PurpleDeep = {0.45f, 0.20f, 0.80f, 1.000f};
@@ -42,7 +42,7 @@ namespace C {
     static const ImVec4 BgPanel    = {0.080f, 0.030f, 0.150f, 1.000f};
     static const ImVec4 BgCard     = {0.120f, 0.050f, 0.220f, 1.000f};
     static const ImVec4 Border     = {0.650f, 0.350f, 1.000f, 0.600f};
-    
+
     static ImU32 U(ImVec4 c, float a = 1.0f) { return IM_COL32((int)(c.x*255),(int)(c.y*255),(int)(c.z*255),(int)(c.w*a*255)); }
     static ImU32 UA(ImVec4 c, float a)        { return IM_COL32((int)(c.x*255),(int)(c.y*255),(int)(c.z*255),(int)(a*255)); }
 }

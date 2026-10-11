@@ -1165,8 +1165,6 @@ void LoadPlaneSkins() {
     }
 }
 
-// ── VehicleSkis / VehicleSkinHelper forward declarations ─────────────────────
-
 inline bool SkinPtr(void* ptr) {
     return ptr != nullptr && Tools::IsPtrValid(ptr);
 }
@@ -1210,12 +1208,10 @@ inline int ActiveVehicleSkinIdForConf(void* skinConf) {
     return ActiveVehicleSkinIdForType((int)fields->VehicleId);
 }
 
-// Function pointers resolved at runtime
 inline void (*VehicleSkinHelper_ChangeVehicleSkinId)(void* vehicleObj, uint vehicleSkinId) = nullptr;
 inline void (*VehicleSkinHelper_ChangeVehicleSkinConf)(void* vehicleObj, void* vehConf) = nullptr;
 inline void (*VehicleSkis_ApplySkin)(void* instance) = nullptr;
 
-// Hook orig pointers
 inline void (*orig_VehicleSkis_SetupSkin)(void* instance, uint skinID, bool findItem) = nullptr;
 inline void (*orig_VehicleSkis_ChangeSkinId)(void* instance, uint skinID) = nullptr;
 inline void (*orig_VehicleSkis_ChangeSkinConf)(void* instance, void* skinConf) = nullptr;
@@ -1320,8 +1316,6 @@ inline void hook_VehicleSkis_LoadModelComplete(void* instance, int assetID, void
     ApplySkisMaterials(instance, selected);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 void LoadSnowboardSkins() {
     std::vector<void*> skinConfs;
     {
@@ -1377,15 +1371,14 @@ void Skins_Thread()
     {
         sleep(1);
     }
-    
+
     sleep(5);
-    
+
     Tools::Hook((void*)(m_unity + 0xA61AC70), (void*)_GetCurrentWeaponKillEffect, (void**)&orig_GetCurrentWeaponKillEffect);
     Tools::Hook((void*)(m_unity + 0xA61AAA8), (void*)_GetCurrentWeaponFireEffect, (void**)&orig_GetCurrentWeaponFireEffect);
     Tools::Hook((void*)(m_unity + 0xA61AB8C), (void*)_GetCurrentBulletTrackEffect, (void**)&orig_GetCurrentBulletTrackEffect);
     Tools::Hook((void*)(m_unity + 0xA61ADFC), (void*)_GetCurrentWeaponBrocast, (void**)&orig_GetCurrentWeaponBrocast);
 
-    // VehicleSkis hooks
     auto hookVehicleRva = [&](uintptr_t rva, void* hook, void** orig) {
         uintptr_t addr = KittyMemory::getAbsoluteAddress("libunity.so", rva);
         if (addr != 0 && Tools::IsPtrValid((void*)addr))
@@ -1408,7 +1401,7 @@ void Skins_Thread()
     uintptr_t skisApplySkinAddr = KittyMemory::getAbsoluteAddress("libunity.so", VehicleSkisApplySkinAddress);
     if (skisApplySkinAddr != 0 && Tools::IsPtrValid((void*)skisApplySkinAddr))
         VehicleSkis_ApplySkin = reinterpret_cast<void (*)(void*)>(skisApplySkinAddr);
-    
+
     while (true)
     {
         LoadCharacterSkins();

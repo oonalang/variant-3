@@ -749,7 +749,7 @@ bool ClearDisplay = false;
 bool ShowFPS;
 bool SnowB = false;
 bool HIDEESP = false;
-bool UnlimitedFly = false;   // <-- Unlimited Fly toggle
+bool UnlimitedFly = false;
 float SnowBsize = 0.0f;
 bool isSpeedHackEnabled = false;
 float speedHackMultiplier = 1.0f;
@@ -839,8 +839,6 @@ static std::string storedKey = "";
 static char s[256];
 static bool g_LoginTextLoaded = false;
 
-
-
 std::vector<sRegion> trapRegions;
 uintptr_t address = 0;
 std::string md5(std::string s);
@@ -851,7 +849,6 @@ int TABG = 1;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
 
-// ---- Pizza outline: single color from the menu hue slider, thicker ----
 static void DrawPizzaOutline(ImDrawList* dl, ImVec2 wMin, ImVec2 wMax, float time)
 {
     const int perSide = 22;
@@ -868,7 +865,6 @@ static void DrawPizzaOutline(ImDrawList* dl, ImVec2 wMin, ImVec2 wMax, float tim
     const float wobAmp  = 2.5f;
     const float wobFreq = 0.55f;
 
-    // Single color pulled from the menu accent (hue slider in the header)
     ImU32 accent = main_runtime_theme::GetAccentU32();
     int ar = (accent >> IM_COL32_R_SHIFT) & 0xFF;
     int ag = (accent >> IM_COL32_G_SHIFT) & 0xFF;
@@ -884,7 +880,6 @@ static void DrawPizzaOutline(ImDrawList* dl, ImVec2 wMin, ImVec2 wMax, float tim
         float wob = sinf(time * 3.0f + i * wobFreq) * wobAmp;
         ImVec2 mid((a.x + b.x) * 0.5f + perp.x * wob, (a.y + b.y) * 0.5f + perp.y * wob);
 
-        // Thicker glow + thicker main stroke
         dl->AddLine(a,   mid, glow,   22.0f);
         dl->AddLine(mid, b,   glow,   22.0f);
         dl->AddLine(a,   mid, accent, 7.0f);
@@ -1468,7 +1463,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
                         g_LoginTextLoaded = true;
                         err.clear();
                         ui_loading::Start(7.0f);
-                        
+
                     }
                 }
                 ImGui::PopStyleColor(4);
