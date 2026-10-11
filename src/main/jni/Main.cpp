@@ -849,44 +849,6 @@ int TABG = 1;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
 
-static void DrawPizzaOutline(ImDrawList* dl, ImVec2 wMin, ImVec2 wMax, float time)
-{
-    const int perSide = 22;
-    const int total = perSide * 4;
-    ImVec2 pts[total + 1];
-    float w = wMax.x - wMin.x, h = wMax.y - wMin.y;
-    int idx = 0;
-    for (int i = 0; i < perSide; i++) { float t = (float)i / perSide; pts[idx++] = {wMin.x + t * w, wMin.y}; }
-    for (int i = 0; i < perSide; i++) { float t = (float)i / perSide; pts[idx++] = {wMax.x, wMin.y + t * h}; }
-    for (int i = 0; i < perSide; i++) { float t = (float)i / perSide; pts[idx++] = {wMax.x - t * w, wMax.y}; }
-    for (int i = 0; i < perSide; i++) { float t = (float)i / perSide; pts[idx++] = {wMin.x, wMax.y - t * h}; }
-    pts[total] = pts[0];
-
-    const float wobAmp  = 2.5f;
-    const float wobFreq = 0.55f;
-
-    ImU32 accent = main_runtime_theme::GetAccentU32();
-    int ar = (accent >> IM_COL32_R_SHIFT) & 0xFF;
-    int ag = (accent >> IM_COL32_G_SHIFT) & 0xFF;
-    int ab = (accent >> IM_COL32_B_SHIFT) & 0xFF;
-    ImU32 glow = IM_COL32(ar, ag, ab, 70);
-
-    for (int i = 0; i < total; i++) {
-        ImVec2 a = pts[i], b = pts[i + 1];
-        ImVec2 dir(b.x - a.x, b.y - a.y);
-        float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
-        if (len < 0.001f) continue;
-        ImVec2 perp(-dir.y / len, dir.x / len);
-        float wob = sinf(time * 3.0f + i * wobFreq) * wobAmp;
-        ImVec2 mid((a.x + b.x) * 0.5f + perp.x * wob, (a.y + b.y) * 0.5f + perp.y * wob);
-
-        dl->AddLine(a,   mid, glow,   22.0f);
-        dl->AddLine(mid, b,   glow,   22.0f);
-        dl->AddLine(a,   mid, accent, 7.0f);
-        dl->AddLine(mid, b,   accent, 7.0f);
-    }
-}
-
 static void DrawEspPreview(ImDrawList* draw, ImVec2 pos, float width, float height) {
     draw->AddRectFilled(pos, ImVec2(pos.x + width, pos.y + height), IM_COL32(10, 12, 18, 245));
     draw->AddRect(pos, ImVec2(pos.x + width, pos.y + height), IM_COL32(70, 70, 82, 180), 8.0f, 0, 1.0f);
@@ -1536,13 +1498,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
                 ImGuiWindowFlags_NoSavedSettings |
                 ImGuiWindowFlags_NoBackground);
             {
-                {
-                    ImVec2 wp2 = ImGui::GetWindowPos();
-                    ImVec2 ws2 = ImGui::GetWindowSize();
-                    ImDrawList* wdl = ImGui::GetWindowDrawList();
-                    DrawPizzaOutline(wdl, wp2, ImVec2(wp2.x + ws2.x, wp2.y + ws2.y), (float)ImGui::GetTime());
-                }
-
                 runtime_preview_menu::StateRefs runtimeState{
                     dark, tabAlpha, tabAdd, page, activeTab,
                     windowCollapsed, isMenuVisible,
@@ -1559,9 +1514,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
                     if (!menuOpen) {
                         runtime_preview_menu::CollapseMenu(runtimeState);
                     }
-
-                    runtime_preview_menu::ResetPopupFocusWindow();
-                    runtime_preview_menu::DrawPopupBackdropFocusLayer(ImGui::GetForegroundDrawList());
                 }
 
                 if (Config.ExtraMenu.WallHack) Patches.A1.Modify();

@@ -276,16 +276,9 @@ namespace imguimenu
     }
     inline void DrawBackground(ImDrawList* dl, ImVec2 p, ImVec2 s) {
         ImVec2 q(p.x + s.x, p.y + s.y);
-        int v0 = dl->VtxBuffer.Size;
-        dl->AddRectFilled(p, q, IM_COL32_WHITE, 14.f);
-        ImGui::ShadeVertsLinearColorGradientKeepAlpha(dl, v0, dl->VtxBuffer.Size, p, q,
-            IM_COL32(60, 52, 140, 255), IM_COL32(18, 66, 130, 255));
-        const ImU32 k0 = IM_COL32(8, 8, 16, 0), k1 = IM_COL32(8, 8, 16, 235);
-        float mid = p.y + s.y * 0.5f;
-        dl->AddRectFilledMultiColor(ImVec2(p.x, p.y + 20.f), ImVec2(q.x, mid), k0, k0, k1, k1);
-        dl->AddRectFilledMultiColor(ImVec2(p.x, mid), ImVec2(q.x, q.y - 20.f), k1, k1, k0, k0);
-        dl->AddRectFilled(p, ImVec2(p.x + 200.f, q.y), IM_COL32(255, 255, 255, 12), 14.f, ImDrawFlags_RoundCornersLeft);
-        dl->AddLine(ImVec2(p.x + 200.f, p.y + 1.f), ImVec2(p.x + 200.f, q.y - 1.f), IM_COL32(255, 255, 255, 30));
-        dl->AddRect(p, q, IM_COL32(255, 255, 255, 45), 14.f);
+        dl->AddRectFilled(p, q, IM_COL32(10, 10, 12, 255), 14.f);
+        dl->AddRectFilled(p, ImVec2(p.x + 200.f, q.y), IM_COL32(255, 255, 255, 6), 14.f, ImDrawFlags_RoundCornersLeft);
+        dl->AddLine(ImVec2(p.x + 200.f, p.y + 1.f), ImVec2(p.x + 200.f, q.y - 1.f), IM_COL32(255, 255, 255, 25));
+        dl->AddRect(p, q, IM_COL32(255, 255, 255, 30), 14.f);
     }
 }
