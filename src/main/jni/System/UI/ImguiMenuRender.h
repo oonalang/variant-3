@@ -130,7 +130,7 @@ namespace imguimenu
     {
         ImGui::SetCursorPos(ImVec2(25.f, 87.f));
         const runtime_preview_menu::ChildFrame misc = runtime_preview_menu::BeginContentChild("MISC##IMGUIMENU", ImVec2(contentW, childH));
-        const runtime_preview_menu::misc_tab::LayoutMetrics layout = runtime_preview_menu::misc_tab::CalculateLayout(contentW, runtime_preview_menu::g_activeChangelogTab);
+        const ::misc_tab::LayoutMetrics layout = ::misc_tab::CalculateLayout(contentW, runtime_preview_menu::g_activeChangelogTab);
         {
             const runtime_preview_menu::ChildFrame changelog = runtime_preview_menu::BeginContentChild("CHANGELOG##IMGUIMENU",
                 ImVec2(contentW, layout.changelogHeight), ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
@@ -139,17 +139,17 @@ namespace imguimenu
             const float safeRight = ImGui::GetStyle().ScrollbarSize + 12.0f;
             const float availW = ImMax(1.0f, ImGui::GetContentRegionAvail().x - safeRight);
             const float tabW = ImMax(1.0f, ImFloor((availW - tabGap * 2.0f) / 3.0f));
-            for (int i = 0; i < IM_ARRAYSIZE(runtime_preview_menu::misc_tab::kChangelogTabs); ++i) {
+            for (int i = 0; i < IM_ARRAYSIZE(::misc_tab::kChangelogTabs); ++i) {
                 char buttonId[48] = {};
                 std::snprintf(buttonId, sizeof(buttonId), "##imguimenu_changelog_%d", i);
                 if (i > 0) ImGui::SameLine(0.0f, tabGap);
-                if (runtime_preview_menu::misc_tab::DrawChangelogTab(buttonId, runtime_preview_menu::misc_tab::kChangelogIcons[i], runtime_preview_menu::misc_tab::kChangelogTabs[i],
+                if (::misc_tab::DrawChangelogTab(buttonId, ::misc_tab::kChangelogIcons[i], ::misc_tab::kChangelogTabs[i],
                     runtime_preview_menu::g_activeChangelogTab == i, ImVec2(tabW, tabH)))
                     runtime_preview_menu::g_activeChangelogTab = i;
             }
-            runtime_preview_menu::misc_tab::ContentGap(12.0f);
-            const runtime_preview_menu::misc_tab::ChangelogSelection activeSection =
-                runtime_preview_menu::misc_tab::GetActiveChangelogSelection(runtime_preview_menu::g_activeChangelogTab);
+            ::misc_tab::ContentGap(12.0f);
+            const ::misc_tab::ChangelogSelection activeSection =
+                ::misc_tab::GetActiveChangelogSelection(runtime_preview_menu::g_activeChangelogTab);
             ImFont* iconFont = F107 ? F107 : ImGui::GetFont();
             ImGui::PushFont(iconFont);
             ImGui::TextColored(activeSection.color, "%s", activeSection.icon);
@@ -158,22 +158,22 @@ namespace imguimenu
             ImGui::TextColored(activeSection.color, "%s", activeSection.title);
             ImGui::SameLine(0.0f, 10.0f);
             ImGui::TextColored(c::text::text, "March 10, 2026");
-            runtime_preview_menu::misc_tab::ContentGap(8.0f);
-            runtime_preview_menu::misc_tab::DrawSectionItems(activeSection.items, activeSection.count);
+            ::misc_tab::ContentGap(8.0f);
+            ::misc_tab::DrawSectionItems(activeSection.items, activeSection.count);
             runtime_preview_menu::EndContentChild(changelog);
         }
-        runtime_preview_menu::misc_tab::ContentGap(layout.rowGap);
+        ::misc_tab::ContentGap(layout.rowGap);
         {
             const runtime_preview_menu::ChildFrame info = runtime_preview_menu::BeginContentChild("INFO##IMGUIMENU",
                 ImVec2(contentW, layout.infoHeight), ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-            runtime_preview_menu::misc_tab::DrawInfoSummary();
+            ::misc_tab::DrawInfoSummary();
             runtime_preview_menu::EndContentChild(info);
         }
-        runtime_preview_menu::misc_tab::ContentGap(layout.rowGap);
+        ::misc_tab::ContentGap(layout.rowGap);
         {
             const runtime_preview_menu::ChildFrame price = runtime_preview_menu::BeginContentChild("PRICELIST##IMGUIMENU",
                 ImVec2(contentW, layout.priceHeight), ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-            runtime_preview_menu::misc_tab::DrawPriceSummary("##imguimenu_misc_prices");
+            ::misc_tab::DrawPriceSummary("##imguimenu_misc_prices");
             runtime_preview_menu::EndContentChild(price);
         }
         runtime_preview_menu::EndContentChild(misc);
@@ -192,19 +192,19 @@ namespace imguimenu
         ImGui::SetCursorPos(ImVec2(25.f, 87.f));
         {
             const runtime_preview_menu::ChildFrame licenseChild = runtime_preview_menu::BeginContentChild("LICENSE INFO##IMGUIMENU", ImVec2(leftW, topH));
-            runtime_preview_menu::settings_tab::RenderLicenseCard();
+            ::settings_tab::RenderLicenseCard();
             runtime_preview_menu::EndContentChild(licenseChild);
             const runtime_preview_menu::ChildFrame logoChild = runtime_preview_menu::BeginContentChild("LOGO SETTINGS##IMGUIMENU", ImVec2(leftW, botH));
-            runtime_preview_menu::settings_tab::RenderLogoCard();
+            ::settings_tab::RenderLogoCard();
             runtime_preview_menu::EndContentChild(logoChild);
         }
         ImGui::SameLine(0.f, colGap);
         {
             const runtime_preview_menu::ChildFrame configChild = runtime_preview_menu::BeginContentChild("CONFIG MANAGEMENT##IMGUIMENU", ImVec2(rightW, topH));
-            runtime_preview_menu::settings_tab::RenderConfigCard();
+            ::settings_tab::RenderConfigCard();
             runtime_preview_menu::EndContentChild(configChild);
             const runtime_preview_menu::ChildFrame enhChild = runtime_preview_menu::BeginContentChild("ENHANCEMENT##IMGUIMENU", ImVec2(rightW, botH));
-            runtime_preview_menu::settings_tab::RenderEnhancementCard();
+            ::settings_tab::RenderEnhancementCard();
             runtime_preview_menu::EndContentChild(enhChild);
         }
         ImGui::PopStyleVar();
